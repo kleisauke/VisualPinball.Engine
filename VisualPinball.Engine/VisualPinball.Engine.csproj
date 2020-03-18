@@ -47,8 +47,8 @@
 			<Private>True</Private>
 		</Reference>
 		<Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c">
-		  <HintPath>..\.packages\NLog.4.7.0-rc1\lib\net45\NLog.dll</HintPath>
-		  <Private>True</Private>
+			<HintPath>..\.packages\NLog.4.7.0-rc1\lib\net45\NLog.dll</HintPath>
+			<Private>True</Private>
 		</Reference>
 		<Reference Include="OpenMcdf, Version=2.2.1.4, Culture=neutral, PublicKeyToken=fdbb1629d7c00800">
 			<HintPath>..\.packages\OpenMcdf.2.2.1.4\lib\net40\OpenMcdf.dll</HintPath>
@@ -152,6 +152,7 @@
 		<Compile Include="Physics\IMoverObject.cs" />
 		<Compile Include="Physics\LineSegSlingshot.cs" />
 		<Compile Include="Properties\AssemblyInfo.cs" />
+		<Compile Include="PinMame\PinMAME.cs" />
 		<Compile Include="VPT\Ball\Ball.cs" />
 		<Compile Include="VPT\Ball\BallData.cs" />
 		<Compile Include="VPT\Ball\BallHit.cs" />
@@ -251,6 +252,13 @@
 			<Name>VisualPinball.Resources</Name>
 		</ProjectReference>
 	</ItemGroup>
+	<ItemGroup>
+		<Folder Include=".lib\" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="PinMame\PinMAME64.dll" Link="%(FileName)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+		<None Include="PinMame\Bass64.dll" Link="%(FileName)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+	</ItemGroup>
 	<Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 	<Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
 		<PropertyGroup>
@@ -263,12 +271,12 @@
 	<Import Project="..\.packages\NetVips.Native.win-x64.8.9.0-rc4\build\net45\NetVips.Native.win-x64.targets" Condition="Exists('..\.packages\NetVips.Native.win-x64.8.9.0-rc4\build\net45\NetVips.Native.win-x64.targets')" />
 	<Import Project="..\.packages\MiniZ.Net.1.0.0\build\MiniZ.Net.targets" Condition="Exists('..\.packages\MiniZ.Net.1.0.0\build\MiniZ.Net.targets')" />
 	<!-- To modify your build process, add your task inside one of the targets below and uncomment it.
-		   Other similar extension points exist, see Microsoft.Common.targets.
-	  <Target Name="BeforeBuild">
-	  </Target>
-	  <Target Name="AfterBuild">
-	  </Target>
-	  -->
+			 Other similar extension points exist, see Microsoft.Common.targets.
+		<Target Name="BeforeBuild">
+		</Target>
+		<Target Name="AfterBuild">
+		</Target>
+		-->
 	<Target Name="AfterBuild">
 		<ItemGroup>
 			<BuildFiles Include="$(OutDir)*.dll;$(OutDir)*.xml" Exclude="$(OutDir)Unity*;$(OutDir)VisualPinball.*;$(OutDir)MiniZ32.dll;$(OutDir)System.Runtime.CompilerServices.Unsafe.*" />

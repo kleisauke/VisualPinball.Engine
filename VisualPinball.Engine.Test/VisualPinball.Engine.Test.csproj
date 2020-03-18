@@ -206,6 +206,7 @@
     <Compile Include="Test\BaseTests.cs" />
     <Compile Include="Test\MeshTests.cs" />
     <Compile Include="Test\Fixtures.cs" />
+    <Compile Include="PinMame\PinMameTests.cs" />
     <Compile Include="VPT\Bumper\BumperDataTests.cs" />
     <Compile Include="VPT\Bumper\BumperMeshTests.cs" />
     <Compile Include="VPT\Collection\CollectionDataTests.cs" />
