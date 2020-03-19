@@ -99,11 +99,15 @@ namespace VisualPinball.Engine.PinMame
 			_changedGIs = new int[GetMaxGIs() * 2];
 		}
 
-
 		public void StopGame()
 		{
-			PinMameApi.StopThreadedGame(true);
 			_isRunning = false;
+			PinMameApi.StopThreadedGame(true);
+		}
+
+		public void ResetGame()
+		{
+			PinMameApi.ResetGame();
 		}
 
 		/// <summary>

@@ -99,6 +99,7 @@
     <Compile Include="Import\MemHelper.cs" />
     <Compile Include="Import\ScaleNormalizer.cs" />
     <Compile Include="Import\VpxImporter.cs" />
+    <Compile Include="PinMame\PinMameBehavior.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="VPT\Ball\BallApi.cs" />
     <Compile Include="VPT\Ball\BallData.cs" />
@@ -149,6 +150,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="PinMame\DmdShader.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
