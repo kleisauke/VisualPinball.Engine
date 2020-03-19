@@ -1,4 +1,6 @@
 ﻿// ReSharper disable MemberCanBeMadeStatic.Global
+// ReSharper disable MemberCanBePrivate.Global
+// ReSharper disable UnusedMember.Global
 
 using System;
 using System.IO;
@@ -20,6 +22,8 @@ namespace VisualPinball.Engine.PinMame
 	/// </remarks>
 	public class PinMame
 	{
+		public bool IsRunning => _isRunning;
+
 		private int _gameIndex = -1;
 		private DmdDimensions _dmd;
 		private byte[] _frame;
@@ -58,16 +62,17 @@ namespace VisualPinball.Engine.PinMame
 		/// </summary>
 		/// <param name="gameName">Name of the game, e.g. "tz_94h"</param>
 		/// <param name="timeout">Timeout in milliseconds to wait for game to start</param>
+		/// <param name="showConsole">If true, open PinMAME console</param>
 		/// <exception cref="InvalidOperationException">If there is already a game running.</exception>
 		/// <exception cref="ArgumentException">If the game name is invalid.</exception>
 		/// <exception cref="TimeoutException">If game did not start in time.</exception>
-		public async Task StartGame(string gameName, int timeout = 5000)
+		public async Task StartGame(string gameName, int timeout = 5000, bool showConsole = false)
 		{
 			if (_isRunning) {
 				throw new InvalidOperationException("Game is running, must stop first.");
 			}
 
-			_gameIndex = PinMameApi.StartThreadedGame(gameName, true);
+			_gameIndex = PinMameApi.StartThreadedGame(gameName, showConsole);
 
 			if (_gameIndex < 0) {
 				throw new ArgumentException("Unknown game \"" + gameName + "\".");
@@ -92,6 +97,13 @@ namespace VisualPinball.Engine.PinMame
 			_changedLamps = new int[GetMaxLamps() * 2];
 			_changedSolenoids = new int[GetMaxSolenoids() * 2];
 			_changedGIs = new int[GetMaxGIs() * 2];
+		}
+
+
+		public void StopGame()
+		{
+			PinMameApi.StopThreadedGame(true);
+			_isRunning = false;
 		}
 
 		/// <summary>
