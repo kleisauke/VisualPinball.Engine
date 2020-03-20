@@ -18,14 +18,17 @@ namespace VisualPinball.Unity.Editor.Inspectors
 
 		public override void OnInspectorGUI()
 		{
-			serializedObject.Update();
 			DrawDefaultInspector();
+
+			EditorGUILayout.BeginHorizontal();
 			if (GUILayout.Button("Start Game")) {
-				_pinMameBehavior.PinName.StartGame("mm_109c", showConsole: true);
+				_pinMameBehavior.StartGame();
 			}
+
 			if (GUILayout.Button("Stop Game")) {
 				_pinMameBehavior.PinName.StopGame();
 			}
+			EditorGUILayout.EndHorizontal();
 		}
 	}
 }

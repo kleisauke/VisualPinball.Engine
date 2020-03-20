@@ -5,8 +5,12 @@ using VisualPinball.Engine.PinMame;
 
 namespace VisualPinball.Unity.PinMame
 {
+	[AddComponentMenu("Visual Pinball/PinMAME")]
+	[ExecuteInEditMode]
 	public class PinMameBehavior : MonoBehaviour
 	{
+
+		public string GameName = "mm_109c";
 		public Engine.PinMame.PinMame PinName { get; private set; }
 
 		private Texture2D _texture;
@@ -27,15 +31,18 @@ namespace VisualPinball.Unity.PinMame
 			PinName = Engine.PinMame.PinMame.Instance();
 		}
 
+		public void StartGame()
+		{
+			Task.Run(async () => {
+				if (!PinName.IsRunning) {
+					await PinName.StartGame(GameName, showConsole: true);
+				}
+			});
+		}
+
 		private void Start()
 		{
 			Init();
-			Task.Run(async () => {
-				if (!PinName.IsRunning) {
-					await PinName.StartGame("mm_109c", showConsole: true);
-					_dmdDimensions = PinName.GetDmdDimensions();
-				}
-			});
 		}
 
 		// Update is called once per frame
@@ -43,11 +50,11 @@ namespace VisualPinball.Unity.PinMame
 		{
 			if (PinName != null && PinName.IsRunning && PinName.NeedsDmdUpdate()) {
 				if (_texture == null) {
+					_dmdDimensions = PinName.GetDmdDimensions();
 					_texture = new Texture2D(_dmdDimensions.Width, _dmdDimensions.Height);
 					GetComponent<Renderer>().sharedMaterial.mainTexture = _texture;
 				}
 
-				//RenderTexture.active = output;
 				var frame = PinName.GetDmdPixels();
 				if (frame.Length == _dmdDimensions.Width * _dmdDimensions.Height) {
 					for (var y = 0; y < _dmdDimensions.Height; y++) {
@@ -57,9 +64,7 @@ namespace VisualPinball.Unity.PinMame
 						}
 					}
 				}
-
 				_texture.Apply();
-				//RenderTexture.active = null;
 			}
 		}
 

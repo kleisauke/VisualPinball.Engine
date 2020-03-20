@@ -102,7 +102,7 @@ namespace VisualPinball.Engine.PinMame
 		public void StopGame()
 		{
 			_isRunning = false;
-			PinMameApi.StopThreadedGame(true);
+			PinMameApi.StopThreadedGame(false);
 		}
 
 		public void ResetGame()
