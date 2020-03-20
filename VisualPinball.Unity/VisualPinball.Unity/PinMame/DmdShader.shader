@@ -3,9 +3,9 @@
 	Properties
 	{
 		_MainTex ("Texture", 2D) = "white" {}
-		_DmdBlockCount ("Block Count", Float) = 128
-		_DmdAspectRatio ("Aspect Ratio", Float) = 4
-		_DmdMax ("Max", Float) = 1.25
+		_Width ("Width", Float) = 128
+		_Height ("Height", Float) = 32
+		_Size ("Dot Size", Float) = 1.25
 	}
 	SubShader
 	{
@@ -37,15 +37,17 @@
 			sampler2D _MainTex;
 			float4 _MainTex_ST;
 
-			float _DmdBlockCount;
-			float _DmdMax;
-			float _DmdAspectRatio;
+			float _Width;
+			float _Height;
+			float _Size;
+
 			float4 FilterColor;
 			float _IsMonochrome;
 
 			// Static computed vars for optimization
-			static float2 BlockCount2 = float2(_DmdBlockCount, _DmdBlockCount / _DmdAspectRatio);
-			static float2 BlockSize2 = 1.0f / BlockCount2;
+			static float AspectRatio = _Width / _Height;
+			static float2 Dimensions = float2(_Width, _Height);
+			static float2 DimensionsPerDot = 1.0f / Dimensions;
 
 			v2f vert (appdata v)
 			{
@@ -70,18 +72,18 @@
 
 			float4 setDmd (float2 uv, sampler2D samp) : COLOR
 			{
-				// Calculate block center
-				float2 blockPos = floor(uv * BlockCount2);
-				float2 blockCenter = blockPos * BlockSize2 + BlockSize2 * 0.5;
+				// Calculate dot center
+				float2 dotPos = floor(uv * Dimensions);
+				float2 dotCenter = dotPos * DimensionsPerDot + DimensionsPerDot * 0.5;
 
 				// Scale coordinates back to original ratio for rounding
-				float2 uvScaled = float2(uv.x * _DmdAspectRatio, uv.y);
-				float2 blockCenterScaled = float2(blockCenter.x * _DmdAspectRatio, blockCenter.y);
+				float2 uvScaled = float2(uv.x * AspectRatio, uv.y);
+				float2 dotCenterScaled = float2(dotCenter.x * AspectRatio, dotCenter.y);
 
-				// Round the block by testing the distance of the pixel coordinate to the center
-				float dist = length(uvScaled - blockCenterScaled) * BlockCount2;
+				// Round the dot by testing the distance of the pixel coordinate to the center
+				float dist = length(uvScaled - dotCenterScaled) * Dimensions;
 
-				float4 insideColor = tex2D(samp, blockCenter);
+				float4 insideColor = tex2D(samp, dotCenter);
 
 				float4 outsideColor = insideColor;
 				outsideColor.r = 0;
@@ -89,7 +91,7 @@
 				outsideColor.b = 0;
 				outsideColor.a = 1;
 
-				float distFromEdge = _DmdMax - dist;  // positive when inside the circle
+				float distFromEdge = _Size - dist;  // positive when inside the circle
 				float thresholdWidth = .22;  // a constant you'd tune to get the right level of softness
 				float antialiasedCircle = saturate((distFromEdge / thresholdWidth) + 0.5);
 

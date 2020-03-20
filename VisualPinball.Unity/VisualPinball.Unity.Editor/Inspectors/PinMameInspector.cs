@@ -26,7 +26,7 @@ namespace VisualPinball.Unity.Editor.Inspectors
 			}
 
 			if (GUILayout.Button("Stop Game")) {
-				_pinMameBehavior.PinName.StopGame();
+				_pinMameBehavior.PinMame.StopGame();
 			}
 			EditorGUILayout.EndHorizontal();
 		}

@@ -23,6 +23,8 @@ namespace VisualPinball.Engine.PinMame
 	public class PinMame
 	{
 		public bool IsRunning => _isRunning;
+		public event EventHandler OnGameStarted;
+		public event EventHandler<string> OnGameStartFailed;
 
 		private int _gameIndex = -1;
 		private DmdDimensions _dmd;
@@ -59,14 +61,15 @@ namespace VisualPinball.Engine.PinMame
 
 		/// <summary>
 		/// Starts a new game.
+		///
+		/// When the game has successfully started, the `GameStarted` event is triggered.
 		/// </summary>
 		/// <param name="gameName">Name of the game, e.g. "tz_94h"</param>
 		/// <param name="timeout">Timeout in milliseconds to wait for game to start</param>
 		/// <param name="showConsole">If true, open PinMAME console</param>
 		/// <exception cref="InvalidOperationException">If there is already a game running.</exception>
 		/// <exception cref="ArgumentException">If the game name is invalid.</exception>
-		/// <exception cref="TimeoutException">If game did not start in time.</exception>
-		public async Task StartGame(string gameName, int timeout = 5000, bool showConsole = false)
+		public void StartGame(string gameName, int timeout = 5000, bool showConsole = false)
 		{
 			if (_isRunning) {
 				throw new InvalidOperationException("Game is running, must stop first.");
@@ -78,31 +81,34 @@ namespace VisualPinball.Engine.PinMame
 				throw new ArgumentException("Unknown game \"" + gameName + "\".");
 			}
 
-			const int sleep = 10;
-			await Task.Run(() => {
+			// start game async, and notify via event
+			Task.Run(() => {
+				const int sleep = 10;
 				var n = timeout / sleep;
 				var i = 0;
 				while (i++ < n && !PinMameApi.IsGameReady()) {
 					Thread.Sleep(sleep);
 				}
+
+				if (!PinMameApi.IsGameReady()) {
+					OnGameStartFailed?.Invoke(this, "Timed out waiting for game to start.");
+					return;
+				}
+				OnGameStarted?.Invoke(this, EventArgs.Empty);
+
+				_isRunning = true;
+				_dmd = GetDmdDimensions();
+				_frame = new byte[_dmd.Width * _dmd.Height];
+				_changedLamps = new int[GetMaxLamps() * 2];
+				_changedSolenoids = new int[GetMaxSolenoids() * 2];
+				_changedGIs = new int[GetMaxGIs() * 2];
 			});
-
-			if (!PinMameApi.IsGameReady()) {
-				throw new TimeoutException("Timed out waiting for game to start.");
-			}
-
-			_isRunning = true;
-			_dmd = GetDmdDimensions();
-			_frame = new byte[_dmd.Width * _dmd.Height];
-			_changedLamps = new int[GetMaxLamps() * 2];
-			_changedSolenoids = new int[GetMaxSolenoids() * 2];
-			_changedGIs = new int[GetMaxGIs() * 2];
 		}
 
 		public void StopGame()
 		{
 			_isRunning = false;
-			PinMameApi.StopThreadedGame(false);
+			PinMameApi.StopThreadedGame(true);
 		}
 
 		public void ResetGame()
