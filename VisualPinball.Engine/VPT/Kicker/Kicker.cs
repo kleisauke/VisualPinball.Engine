@@ -7,8 +7,6 @@ namespace VisualPinball.Engine.VPT.Kicker
 {
 	public class Kicker : Item<KickerData>, IRenderable, IBallCreationPosition
 	{
-		public string[] UsedMaterials => new string[] { Data.Material };
-
 		private readonly KickerMeshGenerator _meshGenerator;
 
 		public Kicker(KickerData data) : base(data)
