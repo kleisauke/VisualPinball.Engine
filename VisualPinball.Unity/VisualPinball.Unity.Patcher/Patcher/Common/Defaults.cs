@@ -1,4 +1,8 @@
 using UnityEngine;
+using VisualPinball.Engine.Game;
+using VisualPinball.Engine.VPT.Bumper;
+using VisualPinball.Engine.VPT.Surface;
+using VisualPinball.Engine.VPT.Table;
 using VisualPinball.Unity.Patcher.Matcher.Item;
 using VisualPinball.Unity.Patcher.Matcher.Table;
 
@@ -24,6 +28,14 @@ namespace VisualPinball.Unity.Patcher.Patcher.Common
 		public void RemoveFlipperShadow(GameObject gameObject)
 		{
 			gameObject.GetComponent<MeshRenderer>().enabled = false;
+		}
+
+		[NameMatch("Wall1")]
+		public void ObjectTest(Table table, IRenderable item, GameObject gameObject)
+		{
+			Debug.Log("table = " + table);
+			Debug.Log("item = " + item);
+			Debug.Log("gameObject = " + gameObject);
 		}
 	}
 }

@@ -1,6 +1,7 @@
 ﻿// ReSharper disable ConvertIfStatementToReturnStatement
 // ReSharper disable ClassNeverInstantiated.Global
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NLog;
@@ -107,11 +108,11 @@ namespace VisualPinball.Unity.Import
 			go.AddComponent<Player>();
 		}
 
-		public static void ImportRenderObject(IRenderable item, RenderObject ro, GameObject obj, TableBehavior table)
+		public static GameObject ImportRenderObject(RenderObject ro, GameObject obj, TableBehavior table)
 		{
 			if (ro.Mesh == null) {
 				Logger.Warn($"No mesh for object {obj.name}, skipping.");
-				return;
+				return null;
 			}
 
 			var mesh = ro.Mesh.ToUnityMesh($"{obj.name}_mesh");
@@ -125,8 +126,7 @@ namespace VisualPinball.Unity.Import
 			mr.sharedMaterial = ro.Material.ToUnityMaterial(table);
 			mr.enabled = ro.IsVisible;
 
-			// patch
-			table.Patcher.ApplyPatches(item, ro, obj);
+			return obj;
 		}
 
 		private void ImportTextures()
@@ -144,6 +144,7 @@ namespace VisualPinball.Unity.Import
 
 		private void ImportRenderables()
 		{
+			var createdObjs = new Dictionary<IRenderable, IEnumerable<Tuple<GameObject, RenderObject>>>();
 			foreach (var renderable in _renderObjects.Keys) {
 				var ro = _renderObjects[renderable];
 				if (!_parents.ContainsKey(ro.Parent)) {
@@ -151,23 +152,36 @@ namespace VisualPinball.Unity.Import
 					parent.transform.parent = gameObject.transform;
 					_parents[ro.Parent] = parent;
 				}
-				ImportRenderObjects(renderable, ro, _parents[ro.Parent]);
+				createdObjs[renderable] = ImportRenderObjects(renderable, ro, _parents[ro.Parent]);
+			}
+
+			// now we have all renderables imported, patch them.
+			foreach (var renderable in createdObjs.Keys) {
+				foreach (var (obj, ro) in createdObjs[renderable]) {
+					_tb.Patcher.ApplyPatches(renderable, ro, obj);
+				}
 			}
 		}
 
-		private void ImportRenderObjects(IRenderable item, RenderObjectGroup rog, GameObject parent)
+		private IEnumerable<Tuple<GameObject, RenderObject>> ImportRenderObjects(IRenderable item, RenderObjectGroup rog, GameObject parent)
 		{
 			var obj = new GameObject(rog.Name);
 			obj.transform.parent = parent.transform;
 
+			var createdObjs = new Tuple<GameObject, RenderObject>[0];
+
 			if (rog.HasOnlyChild && !rog.ForceChild) {
-				ImportRenderObject(item, rog.RenderObjects[0], obj, _tb);
+				ImportRenderObject(rog.RenderObjects[0], obj, _tb);
+				createdObjs = new[] { new Tuple<GameObject, RenderObject>(obj, rog.RenderObjects[0]) };
 			} else if (rog.HasChildren) {
+				createdObjs = new Tuple<GameObject, RenderObject>[rog.RenderObjects.Length];
+				var i = 0;
 				foreach (var ro in rog.RenderObjects) {
 					var subObj = new GameObject(ro.Name);
 					subObj.transform.SetParent(obj.transform, false);
 					subObj.layer = ChildObjectsLayer;
-					ImportRenderObject(item, ro, subObj, _tb);
+					ImportRenderObject(ro, subObj, _tb);
+					createdObjs[i++] = new Tuple<GameObject, RenderObject>(subObj, ro);
 				}
 			}
 
@@ -201,6 +215,7 @@ namespace VisualPinball.Unity.Import
 				}
 			}
 #endif
+			return createdObjs;
 		}
 
 		private void MakeSerializable(GameObject go, Table table)
