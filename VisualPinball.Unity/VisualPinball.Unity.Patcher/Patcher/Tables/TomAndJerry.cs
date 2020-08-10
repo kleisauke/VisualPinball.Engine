@@ -8,7 +8,7 @@ namespace VisualPinball.Unity.Patcher.Patcher.Tables
 {
 	// TODO Problem: the table has wrong meta info, we should adapt the metamatch
 	[TableNameMatch("TomandJerry")]
-	public class TomAndJerry : Common.Defaults
+	public class TomAndJerry
 	{
 		[NameMatch("ShadowsRamp")]
 		[NameMatch("JerryHAMMERshadow")]
