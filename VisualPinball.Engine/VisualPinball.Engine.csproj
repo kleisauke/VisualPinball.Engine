@@ -70,7 +70,7 @@
       <Plugins Include="$(OutDir)NetMiniZ.dll" native="linux-x64" />
 
       <Plugins Include="$(NuGetPackageRoot)\netminiz\1.1.2\runtimes\win-x64\native\*" native="win-x64" />
-      <Plugins Include="$(NuGetPackageRoot)\netminiz\1.1.2\runtimes\win-x86\native\*" native="win-x86" />	
+      <Plugins Include="$(NuGetPackageRoot)\netminiz\1.1.2\runtimes\win-x86\native\*" native="win-x86" />
       <Plugins Include="$(NuGetPackageRoot)\netminiz\1.1.2\runtimes\osx-x64\native\*" native="osx-x64" />
       <Plugins Include="$(NuGetPackageRoot)\netminiz\1.1.2\runtimes\linux-x64\native\*" native="linux-x64" />
 
