@@ -10,8 +10,6 @@ namespace VisualPinball.Engine.VPT.HitTarget
 		public HitObject[] GetHitShapes() => _hits;
 		public EventProxy EventProxy { get; private set; }
 
-		public string[] UsedMaterials => new [] { Data.Material, Data.PhysicsMaterial };
-
 		private readonly HitTargetMeshGenerator _meshGenerator;
 		private readonly HitTargetHitGenerator _hitGenerator;
 		private HitObject[] _hits;
@@ -22,8 +20,15 @@ namespace VisualPinball.Engine.VPT.HitTarget
 			_hitGenerator = new HitTargetHitGenerator(Data, _meshGenerator);
 		}
 
-		public HitTarget(BinaryReader reader, string itemName) : this(new HitTargetData(reader, itemName)) { }
+		public HitTarget(BinaryReader reader, string itemName) : this(new HitTargetData(reader, itemName))
+		{
+		}
 
+		public static HitTarget GetDefault(Table.Table table)
+		{
+			var hitTargetData = new HitTargetData(table.GetNewName<HitTarget>("Target"), table.Width / 2f, table.Height / 2f);
+			return new HitTarget(hitTargetData);
+		}
 
 		public void Init(Table.Table table)
 		{

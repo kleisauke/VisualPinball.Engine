@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using VisualPinball.Engine.IO;
-using VisualPinball.Engine.Resources;
 using VisualPinball.Engine.VPT.Table;
 using VisualPinball.Resources;
 
@@ -45,6 +44,12 @@ namespace VisualPinball.Engine.VPT
 
 		[BiffBits("BITS", Pos = 6)]
 		public Bitmap Bitmap; // originally "PdsBuffer";
+
+		public TextureData(string name) : base(name)
+		{
+			Name = name;
+			Binary = new BinaryData(name);
+		}
 
 		public TextureData(Resource res) : base(res.Name)
 		{

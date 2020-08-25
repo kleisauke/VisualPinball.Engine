@@ -4,12 +4,8 @@ using Unity.Entities;
 using Unity.Mathematics;
 using VisualPinball.Engine.Game;
 using VisualPinball.Engine.Physics;
-using VisualPinball.Unity.Extensions;
-using VisualPinball.Unity.Physics.Collision;
-using VisualPinball.Unity.Physics.Event;
-using VisualPinball.Unity.VPT.Ball;
 
-namespace VisualPinball.Unity.Physics.Collider
+namespace VisualPinball.Unity
 {
 	public struct LineSlingshotCollider : ICollider, ICollidable
 	{
@@ -27,7 +23,7 @@ namespace VisualPinball.Unity.Physics.Collider
 
 		public static void Create(BlobBuilder builder, LineSegSlingshot src, ref BlobPtr<Collider> dest)
 		{
-			ref var linePtr = ref UnsafeUtilityEx.As<BlobPtr<Collider>, BlobPtr<LineSlingshotCollider>>(ref dest);
+			ref var linePtr = ref UnsafeUtility.As<BlobPtr<Collider>, BlobPtr<LineSlingshotCollider>>(ref dest);
 			ref var collider = ref builder.Allocate(ref linePtr);
 			collider.Init(src);
 		}
@@ -52,7 +48,7 @@ namespace VisualPinball.Unity.Physics.Collider
 
 		private static float HitTest(ref CollisionEventData collEvent, ref LineSlingshotCollider coll, ref DynamicBuffer<BallInsideOfBufferElement> insideOfs, in BallData ball, float dTime)
 		{
-			ref var lineColl = ref UnsafeUtilityEx.As<LineSlingshotCollider, LineCollider>(ref coll);
+			ref var lineColl = ref UnsafeUtility.As<LineSlingshotCollider, LineCollider>(ref coll);
 			return LineCollider.HitTestBasic(ref collEvent, ref insideOfs, in lineColl, in ball, dTime, true, true, true);
 		}
 

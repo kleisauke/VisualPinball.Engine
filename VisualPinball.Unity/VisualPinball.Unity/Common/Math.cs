@@ -1,7 +1,9 @@
 ﻿using System.Runtime.CompilerServices;
+using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Mathematics;
 
-namespace VisualPinball.Unity.Common
+namespace VisualPinball.Unity
 {
 	public static class Math
 	{
@@ -55,6 +57,15 @@ namespace VisualPinball.Unity.Common
 		public static float Random()
 		{
 			return (float) _random.NextDouble();
+		}
+
+		public static bool Sign(float f)
+		{
+			var floats = new NativeArray<float>(1, Allocator.Persistent) { [0] = f };
+			var b = floats.Reinterpret<byte>(UnsafeUtility.SizeOf<float>());
+			var sign = (b[3] & 0x80) == 0x80 && (b[2] & 0x00) == 0x00 && (b[1] & 0x00) == 0x00 && (b[0] & 0x00) == 0x00;
+			floats.Dispose();
+			return sign;
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

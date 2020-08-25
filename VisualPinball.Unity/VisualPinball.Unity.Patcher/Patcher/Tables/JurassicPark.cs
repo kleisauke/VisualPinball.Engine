@@ -1,17 +1,15 @@
 // ReSharper disable StringLiteralTypo
 
 using UnityEngine;
-using VisualPinball.Unity.Patcher.Matcher.Item;
-using VisualPinball.Unity.Patcher.Matcher.Table;
 
-namespace VisualPinball.Unity.Patcher.Patcher.Tables
+namespace VisualPinball.Unity.Patcher
 {
 	[MetaMatch(TableName = "Jurassic Park (Data East)", AuthorName = "Dark & Friends")]
 	public class JurassicPark
 	{
 		/// <summary>
-		/// Removing the normal map. 
-		/// The normal map of the TRex Head is bad and contains invalid data. 
+		/// Removing the normal map.
+		/// The normal map of the TRex Head is bad and contains invalid data.
 		/// This causes the entire unity editor window to become black and the play mode flicker if normal map scale is higher than 0.
 		/// </summary>
 		/// <param name="gameObject"></param>
@@ -21,6 +19,22 @@ namespace VisualPinball.Unity.Patcher.Patcher.Tables
 			var unityMat = gameObject.GetComponent<Renderer>().sharedMaterial;
 			unityMat.SetTexture("_NormalMap", null);
 			unityMat.DisableKeyword("_NORMALMAP");
+		}
+
+
+		[NameMatch("LFLogo", Ref="Flippers/LeftFlipper")]
+		[NameMatch("RFLogo", Ref="Flippers/RightFlipper")]
+		[NameMatch("RFLogo1", Ref="Flippers/UpperRightFlipper")]
+		public void ReparentFlippers(GameObject gameObject, ref GameObject parent)
+		{
+			var rot = gameObject.transform.rotation;
+			var pos = gameObject.transform.position;
+
+			// re-parent the child
+			gameObject.transform.SetParent(parent.transform, false);
+
+			gameObject.transform.rotation = rot;
+			gameObject.transform.position = pos;
 		}
 
 		[NameMatch("PLeftFlipper")]

@@ -1,14 +1,12 @@
 ﻿using UnityEditor;
 using VisualPinball.Engine.VPT;
-using VisualPinball.Unity.Editor.DragPoint;
-using VisualPinball.Unity.VPT.Ramp;
 
-namespace VisualPinball.Unity.Editor.Inspectors
+namespace VisualPinball.Unity.Editor
 {
-	[CustomEditor(typeof(RampBehavior))]
+	[CustomEditor(typeof(RampAuthoring))]
 	public class RampInspector : DragPointsItemInspector
 	{
-		private RampBehavior _ramp;
+		private RampAuthoring _ramp;
 		private bool _foldoutColorsAndFormatting = true;
 		private bool _foldoutPosition = true;
 		private bool _foldoutPhysics = true;
@@ -42,12 +40,12 @@ namespace VisualPinball.Unity.Editor.Inspectors
 		protected override void OnEnable()
 		{
 			base.OnEnable();
-			_ramp = target as RampBehavior;
+			_ramp = target as RampAuthoring;
 		}
 
 		public override void OnInspectorGUI()
 		{
-			base.OnPreInspectorGUI();
+			OnPreInspectorGUI();
 
 			if (_foldoutColorsAndFormatting = EditorGUILayout.BeginFoldoutHeaderGroup(_foldoutColorsAndFormatting, "Colors & Formatting")) {
 				DropDownField("Type", ref _ramp.data.RampType, _rampTypeStrings, _rampTypeValues);
@@ -63,11 +61,11 @@ namespace VisualPinball.Unity.Editor.Inspectors
 			if (_foldoutPosition = EditorGUILayout.BeginFoldoutHeaderGroup(_foldoutPosition, "Position")) {
 				ItemDataField("Top Height", ref _ramp.data.HeightTop);
 				ItemDataField("Bottom Height", ref _ramp.data.HeightBottom);
-				
+
 				EditorGUILayout.Space(10);
 				ItemDataField("Top Width", ref _ramp.data.WidthTop);
 				ItemDataField("Bottom Width", ref _ramp.data.WidthBottom);
-				
+
 				EditorGUILayout.Space(10);
 				EditorGUILayout.LabelField("Visible Wall");
 				EditorGUI.indentLevel++;

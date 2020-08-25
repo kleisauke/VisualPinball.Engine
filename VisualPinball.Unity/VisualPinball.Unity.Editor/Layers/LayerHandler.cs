@@ -4,11 +4,9 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using VisualPinball.Engine.VPT;
-using VisualPinball.Unity.Editor.Utils.TreeView;
-using VisualPinball.Unity.VPT;
-using VisualPinball.Unity.VPT.Table;
+using VisualPinball.Unity.Editor.Utils;
 
-namespace VisualPinball.Unity.Editor.Layers
+namespace VisualPinball.Unity.Editor
 {
 	/// <summary>
 	/// Handles user actions within the layer tree. <p/>
@@ -42,14 +40,29 @@ namespace VisualPinball.Unity.Editor.Layers
 		public LayerTreeElement TreeRoot { get; } = new LayerTreeElement { Depth = -1, Id = -1 };
 
 		/// <summary>
+		/// this event is fired when the current Table has changed
+		/// </summary>
+		public event Action TableChanged;
+
+		/// <summary>
 		/// this event is fired each time the Tree structure has been updated based on the data gathered from layer BiffData
 		/// </summary>
 		public event Action TreeRebuilt;
 
 		/// <summary>
-		/// Attached <see cref="TableBehavior"/>, Set by calling OnHierarchyChange
+		/// this event is fired each time a new layer is created
 		/// </summary>
-		private TableBehavior _tableBehavior;
+		public event Action<LayerTreeElement> LayerCreated;
+
+		/// <summary>
+		/// this event is fired each time items are assigned to a layer
+		/// </summary>
+		public event Action<LayerTreeElement, LayerTreeElement[]> ItemsAssigned;
+
+		/// <summary>
+		/// Attached <see cref="TableAuthoring"/>, Set by calling OnHierarchyChange
+		/// </summary>
+		private TableAuthoring _tableAuthoring;
 
 		/// <summary>
 		/// Maps the the game items' <see cref="MonoBehaviour"/> to their respective layers.
@@ -57,20 +70,24 @@ namespace VisualPinball.Unity.Editor.Layers
 		private Dictionary<string, List<MonoBehaviour>> _layers = new Dictionary<string, List<MonoBehaviour>>();
 
 		/// <summary>
-		/// Is called by the <see cref="LayerEditor"/> when a new TableBehavior is created/deleted
+		/// Is called by the <see cref="LayerEditor"/> when a new TableAuthoring is created/deleted
 		/// </summary>
-		/// <param name="tableBehavior"></param>
-		public void OnHierarchyChange(TableBehavior tableBehavior)
+		/// <param name="tableAuthoring"></param>
+		public void OnHierarchyChange(TableAuthoring tableAuthoring)
 		{
-			_tableBehavior = tableBehavior;
+			var tableChanged = _tableAuthoring != tableAuthoring;
+			_tableAuthoring = tableAuthoring;
 			_layers.Clear();
 			Rebuild();
+			if (tableChanged) {
+				TableChanged?.Invoke();
+			}
 		}
 
 		#region Construction
 
 		/// <summary>
-		/// Recursively runs through the <see cref="TableBehavior"/>'s children and
+		/// Recursively runs through the <see cref="TableAuthoring"/>'s children and
 		/// adds the game items' <see cref="MonoBehaviour"/> to the layers map. <p/>
 		///
 		/// It also rebuilds the tree model.
@@ -83,8 +100,8 @@ namespace VisualPinball.Unity.Editor.Layers
 										pair => pair.Value);
 
 			// add layers from table data
-			if (_tableBehavior != null) {
-				BuildLayersRecursively(_tableBehavior.gameObject);
+			if (_tableAuthoring != null) {
+				BuildLayersRecursively(_tableAuthoring.gameObject);
 			}
 
 			// create tree from table data
@@ -99,12 +116,12 @@ namespace VisualPinball.Unity.Editor.Layers
 		{
 			for (var i = 0; i < gameObj.transform.childCount; ++i) {
 				var child = gameObj.transform.GetChild(i).gameObject;
-				AddToLayer(child.GetComponent<ILayerableItemBehavior>());
+				AddToLayer(child.GetComponent<ILayerableItemAuthoring>());
 				BuildLayersRecursively(child);
 			}
 		}
 
-		private void AddToLayer(ILayerableItemBehavior item)
+		private void AddToLayer(ILayerableItemAuthoring item)
 		{
 			if (item == null) {
 				return;
@@ -123,10 +140,10 @@ namespace VisualPinball.Unity.Editor.Layers
 			TreeRoot.Children.Clear();
 
 			// init with root element
-			if (_tableBehavior != null && _tableBehavior.Table != null) {
+			if (_tableAuthoring != null && _tableAuthoring.Table != null) {
 
 				// table node
-				var tableItem = new LayerTreeElement(_tableBehavior.Table) { Id = 0 };
+				var tableItem = new LayerTreeElement(_tableAuthoring.Table) { Id = 0 };
 				TreeRoot.AddChild(tableItem);
 
 				var layerCount = 1;
@@ -137,7 +154,7 @@ namespace VisualPinball.Unity.Editor.Layers
 					tableItem.AddChild(layerItem);
 
 					foreach (var item in pair.Value.OrderBy(behaviour => behaviour.name)) {
-						if (item is ILayerableItemBehavior layeredItem) {
+						if (item is ILayerableItemAuthoring layeredItem) {
 							layerItem.AddChild(new LayerTreeElement(layeredItem) { Id = item.gameObject.GetInstanceID() });
 						}
 					}
@@ -151,6 +168,21 @@ namespace VisualPinball.Unity.Editor.Layers
 
 		#region Rename
 
+		internal bool ValidateNewLayerName(string newName)
+		{
+			if (string.IsNullOrEmpty(newName)) {
+				EditorUtility.DisplayDialog("Visual Pinball", "Layer name cannot be empty", "Close");
+				return false;
+			}
+
+			if (_layers.ContainsKey(newName)) {
+				EditorUtility.DisplayDialog("Visual Pinball", $"There is already a layer named {newName}.\nFind another layer name.", "Close");
+				return false;
+			}
+
+			return true;
+		}
+
 		/// <summary>
 		/// Applies the new layer name to all items, and updates internals.
 		/// </summary>
@@ -163,8 +195,7 @@ namespace VisualPinball.Unity.Editor.Layers
 			}
 
 			// Check if there is not already a layers with the same name
-			if (_layers.ContainsKey(newName)) {
-				EditorUtility.DisplayDialog("Visual Pinball", $"There is already a layer named {newName}.\nFind another layer name.", "Close");
+			if (!ValidateNewLayerName(newName)) {
 				return;
 			}
 
@@ -177,7 +208,7 @@ namespace VisualPinball.Unity.Editor.Layers
 
 			// Update layer name for all items within this layer
 			if (element.HasChildren) {
-				ApplyLayerNameToItems(element.GetChildren<LayerTreeElement>(), newName);
+				ApplyLayerNameToItems(element.GetChildren(), newName);
 			}
 			RebuildTree();
 		}
@@ -194,7 +225,7 @@ namespace VisualPinball.Unity.Editor.Layers
 				if (element.Item != null) {
 					ApplyLayerNameToItem(element.Item, layerName);
 					if (element.HasChildren) {
-						ApplyLayerNameToItems(element.GetChildren<LayerTreeElement>(), layerName);
+						ApplyLayerNameToItems(element.GetChildren(), layerName);
 					}
 				}
 			}
@@ -205,7 +236,7 @@ namespace VisualPinball.Unity.Editor.Layers
 		/// </summary>
 		/// <param name="item">Tree layer element to update</param>
 		/// <param name="layerName">New layer name</param>
-		private static void ApplyLayerNameToItem(ILayerableItemBehavior item, string layerName)
+		private static void ApplyLayerNameToItem(ILayerableItemAuthoring item, string layerName)
 		{
 			if (item.EditorLayerName != layerName) {
 				if (item is MonoBehaviour behaviour) {
@@ -219,19 +250,29 @@ namespace VisualPinball.Unity.Editor.Layers
 
 		#region Add/Remove
 
-		/// <summary>
-		/// Create a new layer with first free name formatted as "New Layer {num}"
-		/// </summary>
-		public string CreateNewLayer()
+		public string GetNewLayerValidName()
 		{
 			var newLayerNum = 0;
 			while (_layers.ContainsKey($"{NewLayerDefaultName}{newLayerNum}")) {
 				newLayerNum++;
 			}
-			string newLayerName = $"{NewLayerDefaultName}{newLayerNum}";
-			_layers.Add(newLayerName, new List<MonoBehaviour>());
-			RebuildTree();
-			return newLayerName;
+			return $"{NewLayerDefaultName}{newLayerNum}";
+		}
+
+		/// <summary>
+		/// Create a new layer with first free name formatted as "New Layer {num}"
+		/// </summary>
+		public void CreateNewLayer(string layerName)
+		{
+			string newLayerName = layerName;
+			if (string.IsNullOrEmpty(newLayerName)) {
+				newLayerName = GetNewLayerValidName();
+			}
+			if (ValidateNewLayerName(newLayerName)) {
+				_layers.Add(newLayerName, new List<MonoBehaviour>());
+				RebuildTree();
+				LayerCreated?.Invoke(TreeRoot.Find(e => (e.Type == LayerTreeViewElementType.Layer && e.LayerName == newLayerName)));
+			}
 		}
 
 		/// <summary>
@@ -244,7 +285,7 @@ namespace VisualPinball.Unity.Editor.Layers
 		/// </remarks>
 		public void DeleteLayer(int id)
 		{
-			var layerItem = TreeRoot.Find<LayerTreeElement>(id);
+			var layerItem = TreeRoot.Find(id);
 			if (layerItem != null && layerItem.Type == LayerTreeViewElementType.Layer) {
 
 				if (_layers.Keys.Count == 1) {
@@ -252,14 +293,23 @@ namespace VisualPinball.Unity.Editor.Layers
 					return;
 				}
 
-				// Keep layer's items and put them in the first layer
-				var items = layerItem.GetChildren<LayerTreeElement>();
-				_layers.Remove(layerItem.LayerName);
-				var firstLayer = TreeRoot.GetChildren<LayerTreeElement>(e => e.Type == LayerTreeViewElementType.Layer)[0];
-				foreach (var item in items) {
-					item.ReParent(firstLayer);
+				if (!EditorUtility.DisplayDialog("Visual Pinball", $"Do you really want to delete layer {layerItem.Name} ?", "Yes", "No")) {
+					return;
 				}
-				Rebuild();
+
+				// Keep layer's items and put them in the first layer
+				var items = layerItem.GetChildren();
+				_layers.Remove(layerItem.LayerName);
+				if (items.Length > 0) {
+					var firstLayer = TreeRoot.GetChildren(e => e.Type == LayerTreeViewElementType.Layer)[0];
+					foreach (var item in items) {
+						item.ReParent(firstLayer);
+					}
+					Rebuild();
+					ItemsAssigned?.Invoke(firstLayer, items);
+				} else {
+					Rebuild();
+				}
 			}
 		}
 		#endregion
@@ -273,26 +323,42 @@ namespace VisualPinball.Unity.Editor.Layers
 
 		private void AssignToLayer(LayerTreeElement[] elements, LayerTreeElement layer)
 		{
-			if (layer.Type != LayerTreeViewElementType.Layer) {
+			if (layer == null || layer.Type != LayerTreeViewElementType.Layer || elements.Length == 0) {
 				return;
 			}
 
 			foreach (var element in elements) {
 				if (element.Type == LayerTreeViewElementType.Item) {
-					element.ReParent(layer);
+					var oldLayer = element.ReParent(layer) as LayerTreeElement;
+					var bh = element.Item as MonoBehaviour;
+					if (oldLayer != null) {
+						_layers[oldLayer.Name].Remove(bh);
+					}
+					_layers[layer.Name].Add(bh);
 				}
 			}
 			Rebuild();
+			ItemsAssigned?.Invoke(layer, elements);
 		}
 
 		internal void AssignToLayer(LayerTreeElement[] elements, string layerName)
 		{
-			if (string.IsNullOrEmpty(layerName)) {
-				layerName = CreateNewLayer();
-			}
-
-			var layer = TreeRoot.Find<LayerTreeElement>(e => e.Type == LayerTreeViewElementType.Layer && e.LayerName == layerName);
+			var layer = TreeRoot.Find(e => e.Type == LayerTreeViewElementType.Layer && e.LayerName == layerName);
 			AssignToLayer(elements, layer);
+		}
+
+		/// <summary>
+		/// This assign method is used when the <see cref="LayerEditor"/> is receiving a callback of item creation from the <see cref="ToolboxEditor"/>
+		/// </summary>
+		/// <param name="obj">The GameObject which has been created by the ToolBox</param>
+		/// <param name="layerName">The first selected layer provided by the <see cref="LayerTreeView"/></param>
+		internal void AssignToLayer(GameObject obj, string layerName)
+		{
+			var layerable = obj.GetComponent<ILayerableItemAuthoring>();
+			if (layerable != null) {
+				var layer = TreeRoot.Find(e => e.Type == LayerTreeViewElementType.Layer && e.LayerName == layerName);
+				AssignToLayer(new LayerTreeElement[] { new LayerTreeElement(layerable) { Id = obj.GetInstanceID() } }, layer);
+			}
 		}
 
 		#endregion
@@ -303,21 +369,27 @@ namespace VisualPinball.Unity.Editor.Layers
 		/// Callback when a TreeViewItem is double clicked
 		/// </summary>
 		/// <param name="element">the TreeElement attached to the TreeViewItem</param>
-		internal static void OnItemDoubleClicked(LayerTreeElement element)
+		internal static void OnItemDoubleClicked(LayerTreeElement[] elements)
 		{
-			switch (element.Type) {
-				case LayerTreeViewElementType.Table:
-				case LayerTreeViewElementType.Layer: {
-					LayerTreeElement[] items = element.GetChildren<LayerTreeElement>(child => child.Type == LayerTreeViewElementType.Item);
-					Selection.objects = items.Select(item => EditorUtility.InstanceIDToObject(item.Id)).ToArray();
-					break;
-				}
+			List<UnityEngine.Object> selectedObjs = new List<UnityEngine.Object>();
+			foreach(var element in elements) {
+				switch (element.Type) {
+					case LayerTreeViewElementType.Table:
+					case LayerTreeViewElementType.Layer: {
+						LayerTreeElement[] items = element.GetChildren(child => child.Type == LayerTreeViewElementType.Item);
+						selectedObjs.AddRange(items.Select(item => EditorUtility.InstanceIDToObject(item.Id)).ToArray());
+						break;
+					}
 
-				case LayerTreeViewElementType.Item: {
-					Selection.activeObject = EditorUtility.InstanceIDToObject(element.Id);
-					break;
+					case LayerTreeViewElementType.Item: {
+						selectedObjs.Add(EditorUtility.InstanceIDToObject(element.Id));
+						break;
+					}
 				}
 			}
+
+			Selection.objects = selectedObjs.ToArray();
+			SceneViewFramer.FrameObjects(Selection.objects);
 		}
 
 		#endregion

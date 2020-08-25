@@ -10,7 +10,6 @@ namespace VisualPinball.Engine.VPT.Gate
 	{
 		public EventProxy EventProxy { get; private set; }
 		public bool IsCollidable => true;
-		public string[] UsedMaterials => new string[] { Data.Material };
 
 		private readonly GateMeshGenerator _meshGenerator;
 		private readonly GateHitGenerator _hitGenerator;
@@ -24,7 +23,15 @@ namespace VisualPinball.Engine.VPT.Gate
 			_hitGenerator = new GateHitGenerator(Data);
 		}
 
-		public Gate(BinaryReader reader, string itemName) : this(new GateData(reader, itemName)) { }
+		public Gate(BinaryReader reader, string itemName) : this(new GateData(reader, itemName))
+		{
+		}
+
+		public static Gate GetDefault(Table.Table table)
+		{
+			var gateData = new GateData(table.GetNewName<Gate>("Gate"), table.Width / 2f, table.Height / 2f);
+			return new Gate(gateData);
+		}
 
 		public void Init(Table.Table table)
 		{

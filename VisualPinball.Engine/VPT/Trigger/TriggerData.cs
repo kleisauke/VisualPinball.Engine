@@ -41,11 +41,12 @@ namespace VisualPinball.Engine.VPT.Trigger
 		[BiffFloat("SCAY", Pos = 6)]
 		public float ScaleY = 1f;
 
+		[MaterialReference]
 		[BiffString("MATR", Pos = 10)]
-		public string Material;
+		public string Material = string.Empty;
 
 		[BiffString("SURF", Pos = 9)]
-		public string Surface;
+		public string Surface = string.Empty;
 
 		[BiffBool("VSBL", Pos = 12)]
 		public bool IsVisible = true;
@@ -73,6 +74,12 @@ namespace VisualPinball.Engine.VPT.Trigger
 
 		[BiffInt("TMIN", Pos = 8)]
 		public int TimerInterval;
+
+		public TriggerData(string name, float x, float y) : base(StoragePrefix.GameItem)
+		{
+			Name = name;
+			Center = new Vertex2D(x, y);
+		}
 
 		#region BIFF
 

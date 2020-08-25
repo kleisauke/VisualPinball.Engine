@@ -1,8 +1,7 @@
 ﻿using Unity.Entities;
 using Unity.Mathematics;
-using VisualPinball.Unity.Physics.Collision;
 
-namespace VisualPinball.Unity.VPT.Ball
+namespace VisualPinball.Unity
 {
 	// todo split this into at least 2 components
 	public struct BallData : IComponentData
@@ -18,6 +17,8 @@ namespace VisualPinball.Unity.VPT.Ball
 		public float Mass;
 		public bool IsFrozen;
 		public int RingCounterOldPos;
+
+		public float3 OldVelocity;
 
 		public Aabb Aabb {
 			get {
@@ -91,7 +92,7 @@ namespace VisualPinball.Unity.VPT.Ball
 			insideOfs.Add(new BallInsideOfBufferElement {Value = entity});
 		}
 
-		public static bool IsOutsideOf(ref DynamicBuffer<BallInsideOfBufferElement> insideOfs, ref Entity entity)
+		public static bool IsOutsideOf(ref DynamicBuffer<BallInsideOfBufferElement> insideOfs, in Entity entity)
 		{
 			return !IsInsideOf(in insideOfs, in entity);
 		}

@@ -65,6 +65,7 @@ namespace VisualPinball.Engine.VPT.Gate
 		[BiffBool("GSUP", Pos = 7)]
 		public bool ShowBracket = true;
 
+		[MaterialReference]
 		[BiffString("MATR", Pos = 5)]
 		public string Material;
 
@@ -82,6 +83,13 @@ namespace VisualPinball.Engine.VPT.Gate
 
 		[BiffInt("TMIN", Pos = 9)]
 		public int TimerInterval;
+
+		public GateData(string name, float x, float y) : base(StoragePrefix.GameItem)
+		{
+			Name = name;
+			Center = new Vertex2D(x, y);
+			Rotation = 180f;
+		}
 
 		#region BIFF
 

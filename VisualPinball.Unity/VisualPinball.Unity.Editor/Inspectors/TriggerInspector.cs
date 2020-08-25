@@ -1,14 +1,12 @@
 ﻿using UnityEditor;
 using VisualPinball.Engine.VPT;
-using VisualPinball.Unity.Editor.DragPoint;
-using VisualPinball.Unity.VPT.Trigger;
 
-namespace VisualPinball.Unity.Editor.Inspectors
+namespace VisualPinball.Unity.Editor
 {
-	[CustomEditor(typeof(TriggerBehavior))]
+	[CustomEditor(typeof(TriggerAuthoring))]
 	public class TriggerInspector : DragPointsItemInspector
 	{
-		private TriggerBehavior _trigger;
+		private TriggerAuthoring _trigger;
 		private bool _foldoutColorsAndFormatting = true;
 		private bool _foldoutPosition = true;
 		private bool _foldoutPhysics = true;
@@ -36,12 +34,12 @@ namespace VisualPinball.Unity.Editor.Inspectors
 		protected override void OnEnable()
 		{
 			base.OnEnable();
-			_trigger = target as TriggerBehavior;
+			_trigger = target as TriggerAuthoring;
 		}
 
 		public override void OnInspectorGUI()
 		{
-			base.OnPreInspectorGUI();
+			OnPreInspectorGUI();
 
 			if (_foldoutColorsAndFormatting = EditorGUILayout.BeginFoldoutHeaderGroup(_foldoutColorsAndFormatting, "Colors & Formatting")) {
 				ItemDataField("Visible", ref _trigger.data.IsVisible);

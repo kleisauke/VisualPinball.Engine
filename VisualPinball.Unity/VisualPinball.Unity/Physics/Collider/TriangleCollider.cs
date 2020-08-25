@@ -4,12 +4,8 @@ using Unity.Entities;
 using Unity.Mathematics;
 using VisualPinball.Engine.Common;
 using VisualPinball.Engine.Physics;
-using VisualPinball.Unity.Extensions;
-using VisualPinball.Unity.Physics.Collision;
-using VisualPinball.Unity.Physics.Event;
-using VisualPinball.Unity.VPT.Ball;
 
-namespace VisualPinball.Unity.Physics.Collider
+namespace VisualPinball.Unity
 {
 	public struct TriangleCollider : ICollider, ICollidable
 	{
@@ -26,7 +22,7 @@ namespace VisualPinball.Unity.Physics.Collider
 
 		public static void Create(BlobBuilder builder, HitTriangle src, ref BlobPtr<Collider> dest)
 		{
-			ref var trianglePtr = ref UnsafeUtilityEx.As<BlobPtr<Collider>, BlobPtr<TriangleCollider>>(ref dest);
+			ref var trianglePtr = ref UnsafeUtility.As<BlobPtr<Collider>, BlobPtr<TriangleCollider>>(ref dest);
 			ref var collider = ref builder.Allocate(ref trianglePtr);
 			collider.Init(src);
 		}

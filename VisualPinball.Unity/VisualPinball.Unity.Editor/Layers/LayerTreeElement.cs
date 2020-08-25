@@ -3,10 +3,8 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using VisualPinball.Engine.VPT.Table;
-using VisualPinball.Unity.Editor.Utils.TreeView;
-using VisualPinball.Unity.VPT;
 
-namespace VisualPinball.Unity.Editor.Layers
+namespace VisualPinball.Unity.Editor
 {
 	/// <summary>
 	/// Enum for LayerTreeElement visibility status (including children)
@@ -30,7 +28,7 @@ namespace VisualPinball.Unity.Editor.Layers
 		/// Name of the layer
 		/// </summary>
 		public string LayerName;
-		public ILayerableItemBehavior Item { get; }
+		public ILayerableItemAuthoring Item { get; }
 
 		private readonly Table _table;
 
@@ -52,8 +50,8 @@ namespace VisualPinball.Unity.Editor.Layers
 		{
 			get {
 				if (Type == LayerTreeViewElementType.Item) {
-					if (Item is Behaviour behaviour) {
-						_isVisible = !SceneVisibilityManager.instance.IsHidden(behaviour.gameObject);
+					if (Item is MonoBehaviour behaviour) {
+						_isVisible = behaviour.gameObject != null ? !SceneVisibilityManager.instance.IsHidden(behaviour.gameObject) : false;
 					}
 					else {
 						_isVisible = false;
@@ -70,7 +68,7 @@ namespace VisualPinball.Unity.Editor.Layers
 						Undo.RecordObject(behaviour, $"{behaviour.name} : Switch visibility to {_isVisible}.");
 					}
 					Item.EditorLayerVisibility = _isVisible;
-					if (behaviour != null) {
+					if (behaviour != null && behaviour.gameObject != null) {
 						if (_isVisible) {
 							SceneVisibilityManager.instance.Show(behaviour.gameObject, true);
 						}
@@ -106,7 +104,7 @@ namespace VisualPinball.Unity.Editor.Layers
 					}
 
 					case LayerTreeViewElementType.Item: {
-						if (Item is IIdentifiableItemBehavior identifiable) {
+						if (Item is IIdentifiableItemAuthoring identifiable) {
 							return identifiable.Name;
 						}
 						return string.Empty;
@@ -196,7 +194,7 @@ namespace VisualPinball.Unity.Editor.Layers
 		/// Construct as <see cref="LayerTreeViewElementType.Item"/>.
 		/// </summary>
 		/// <param name="item">Game item behavior</param>
-		public LayerTreeElement(ILayerableItemBehavior item)
+		public LayerTreeElement(ILayerableItemAuthoring item)
 		{
 			Item = item;
 			IsVisible = Item.EditorLayerVisibility;
@@ -213,9 +211,9 @@ namespace VisualPinball.Unity.Editor.Layers
 
 		#endregion
 
-		public override void ReParent(TreeElement newParent)
+		public override TreeElement ReParent(TreeElement newParent)
 		{
-			base.ReParent(newParent);
+			var oldParent = base.ReParent(newParent);
 			// Update Layer BiffData when reparenting an Item on a Layer
 			if (Type == LayerTreeViewElementType.Item &&
 					newParent is LayerTreeElement layerParent &&
@@ -225,6 +223,7 @@ namespace VisualPinball.Unity.Editor.Layers
 				}
 				Item.EditorLayerName = layerParent.LayerName;
 			}
+			return oldParent;
 		}
 	}
 

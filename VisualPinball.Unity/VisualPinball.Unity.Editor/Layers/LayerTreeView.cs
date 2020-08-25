@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
-using VisualPinball.Unity.Editor.Utils.TreeView;
-using UnityObject = UnityEngine.Object;
 
-namespace VisualPinball.Unity.Editor.Layers
+namespace VisualPinball.Unity.Editor
 {
 	/// <summary>
 	/// The actual tree view that is rendered in the editor window.
@@ -37,6 +36,80 @@ namespace VisualPinball.Unity.Editor.Layers
 			showAlternatingRowBackgrounds = true;
 			customFoldoutYOffset = 3f;
 		}
+
+		private void ExpandTableItem()
+		{
+			SetExpanded(Root.GetChildren(e => e.Type == LayerTreeViewElementType.Table)
+									.Select(e => e.Id)
+									.ToList().First(), true);
+		}
+
+		#region Selection
+		public void SynchronizeSelection(IList<int> selectIds)
+		{
+			if (GetSelection().SequenceEqual(selectIds)) {
+				return;
+			}
+
+			CollapseAll();
+			ExpandTableItem();
+			var layersIds = Root.GetChildren(e => selectIds.Contains(e.Id))
+								.Select(e => e.Parent.Id).ToList();
+			foreach( var id in layersIds) {
+				SetExpanded(id, true);
+			}
+			SetSelection(selectIds);
+			SetFocusAndEnsureSelectedItem();
+		}
+
+		public string GetFirstSelectedLayer(bool includeItems = true)
+		{
+			var idList = GetSelection();
+			var layers = Root.GetChildren(e => e.Type == LayerTreeViewElementType.Layer);
+			var selectedLayers = layers.Where(layer => idList.Contains(layer.Id)).ToArray();
+			if (selectedLayers.Length > 0) {
+				return selectedLayers[0].Name;
+			}
+
+			if (includeItems) {
+				var selectedItems = Root.GetChildren(e => idList.Contains(e.Id) && e.Type == LayerTreeViewElementType.Item);
+				if (selectedItems.Length > 0) {
+					if (selectedItems[0].Parent is LayerTreeElement layerElt) {
+						return layerElt.Name;
+					}
+				}
+			}
+
+			return layers.Length > 0 ? layers[0].Name : string.Empty;
+		}
+		#endregion
+
+		#region LayerHandler Events
+		internal void TableChanged()
+		{
+			Reload();
+			SetSelection(new List<int>());
+			CollapseAll();
+			ExpandTableItem();
+		}
+		internal void LayerCreated(LayerTreeElement layer)
+		{
+			Reload();
+			SetSelection(new List<int>() { layer.Id });
+			SetFocusAndEnsureSelectedItem();
+		}
+
+		internal void ItemsAssigned(LayerTreeElement layer, LayerTreeElement[] items)
+		{
+			Reload();
+			CollapseAll();
+			ExpandTableItem();
+			SetExpanded(layer.Id, true);
+			SetSelection(items.Select(i => i.Id).ToList());
+			SetFocusAndEnsureSelectedItem();
+		}
+
+		#endregion
 
 		private static readonly Dictionary<LayerTreeElementVisibility, Texture> VisibilityToIcon = new Dictionary<LayerTreeElementVisibility, Texture>() {
 			{ LayerTreeElementVisibility.Hidden, EditorGUIUtility.IconContent("scenevis_hidden_hover").image},
@@ -90,12 +163,17 @@ namespace VisualPinball.Unity.Editor.Layers
 		{
 			// Set the backend name and reload the tree to reflect the new model
 			if (args.acceptedRename) {
-				var layerElement = Root.Find<LayerTreeElement>(args.itemID);
+				var layerElement = Root.Find(args.itemID);
 				if (layerElement != null && layerElement.Type == LayerTreeViewElementType.Layer) {
 					LayerRenamed?.Invoke(layerElement, args.newName);
 					Reload();
 				}
 			}
+		}
+
+		internal void OnItemRenamed(IIdentifiableItemAuthoring item, string oldName, string newName)
+		{
+			Reload();
 		}
 
 		#endregion
@@ -122,6 +200,7 @@ namespace VisualPinball.Unity.Editor.Layers
 					}
 				}
 				Reload();
+				DragAndDrop.AcceptDrag();
 				return DragAndDropVisualMode.None;
 			}
 
@@ -141,6 +220,7 @@ namespace VisualPinball.Unity.Editor.Layers
 				}
 			}
 		}
+
 		#endregion
 
 	}

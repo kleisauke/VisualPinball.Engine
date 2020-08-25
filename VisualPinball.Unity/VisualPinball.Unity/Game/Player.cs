@@ -5,32 +5,20 @@ using Unity.Mathematics;
 using UnityEngine;
 using VisualPinball.Engine.Common;
 using VisualPinball.Engine.Game;
+using VisualPinball.Engine.VPT.Bumper;
 using VisualPinball.Engine.VPT.Flipper;
 using VisualPinball.Engine.VPT.Gate;
 using VisualPinball.Engine.VPT.HitTarget;
 using VisualPinball.Engine.VPT.Kicker;
 using VisualPinball.Engine.VPT.Plunger;
+using VisualPinball.Engine.VPT.Ramp;
 using VisualPinball.Engine.VPT.Rubber;
 using VisualPinball.Engine.VPT.Spinner;
 using VisualPinball.Engine.VPT.Surface;
 using VisualPinball.Engine.VPT.Table;
 using VisualPinball.Engine.VPT.Trigger;
-using VisualPinball.Unity.Physics.DebugUI;
-using VisualPinball.Unity.Physics.Event;
-using VisualPinball.Unity.VPT;
-using VisualPinball.Unity.VPT.Ball;
-using VisualPinball.Unity.VPT.Flipper;
-using VisualPinball.Unity.VPT.Gate;
-using VisualPinball.Unity.VPT.HitTarget;
-using VisualPinball.Unity.VPT.Kicker;
-using VisualPinball.Unity.VPT.Plunger;
-using VisualPinball.Unity.VPT.Rubber;
-using VisualPinball.Unity.VPT.Spinner;
-using VisualPinball.Unity.VPT.Surface;
-using VisualPinball.Unity.VPT.Table;
-using VisualPinball.Unity.VPT.Trigger;
 
-namespace VisualPinball.Unity.Game
+namespace VisualPinball.Unity
 {
 	public class Player : MonoBehaviour
 	{
@@ -54,6 +42,14 @@ namespace VisualPinball.Unity.Game
 		}
 
 		#region Registrations
+
+		public void RegisterBumper(Bumper bumper, Entity entity, GameObject go)
+		{
+			var bumperApi = new BumperApi(bumper, entity, this);
+			_tableApi.Bumpers[bumper.Name] = bumperApi;
+			_initializables.Add(bumperApi);
+			_hittables[entity] = bumperApi;
+		}
 
 		public void RegisterFlipper(Flipper flipper, Entity entity, GameObject go)
 		{
@@ -90,6 +86,8 @@ namespace VisualPinball.Unity.Game
 		{
 			var kickerApi = new KickerApi(kicker, entity, this);
 			_tableApi.Kickers[kicker.Name] = kickerApi;
+			_initializables.Add(kickerApi);
+			_hittables[entity] = kickerApi;
 		}
 
 		public void RegisterPlunger(Plunger plunger, Entity entity, GameObject go)
@@ -98,6 +96,13 @@ namespace VisualPinball.Unity.Game
 			_tableApi.Plungers[plunger.Name] = plungerApi;
 			_initializables.Add(plungerApi);
 			_rotatables[entity] = plungerApi;
+		}
+
+		public void RegisterRamp(Ramp ramp, Entity entity, GameObject go)
+		{
+			var rampApi = new RampApi(ramp, entity, this);
+			_tableApi.Ramps[ramp.Name] = rampApi;
+			_initializables.Add(rampApi);
 		}
 
 		public void RegisterRubber(Rubber rubber, Entity entity, GameObject go)
@@ -190,7 +195,7 @@ namespace VisualPinball.Unity.Game
 
 		private void Awake()
 		{
-			var tableComponent = gameObject.GetComponent<TableBehavior>();
+			var tableComponent = gameObject.GetComponent<TableAuthoring>();
 			_table = tableComponent.CreateTable();
 			_ballManager = new BallManager(_table);
 		}
@@ -235,7 +240,7 @@ namespace VisualPinball.Unity.Game
 			}
 
 			if (Input.GetKeyUp("n")) {
-				CreateBall(new DebugBallCreator(430f, 1350f, 0, 10));
+				CreateBall(new DebugBallCreator(_table.Width / 2f, _table.Height / 2f - 300f, 0, -5));
 				//_tableApi.Flippers["LeftFlipper"].RotateToEnd();
 			}
 

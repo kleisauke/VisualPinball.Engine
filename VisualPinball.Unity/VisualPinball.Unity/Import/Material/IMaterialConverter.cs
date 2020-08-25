@@ -1,9 +1,8 @@
 ﻿using System.Text;
 using UnityEngine;
 using VisualPinball.Engine.VPT;
-using VisualPinball.Unity.VPT.Table;
 
-namespace VisualPinball.Unity.Import.Material
+namespace VisualPinball.Unity
 {
 	/// <summary>
 	/// Common interface for material conversion with the various render pipelines
@@ -23,7 +22,7 @@ namespace VisualPinball.Unity.Import.Material
 		/// <param name="table"></param>
 		/// <param name="debug"></param>
 		/// <returns></returns>
-		UnityEngine.Material CreateMaterial(PbrMaterial vpxMaterial, TableBehavior table, StringBuilder debug = null);
+		UnityEngine.Material CreateMaterial(PbrMaterial vpxMaterial, TableAuthoring table, StringBuilder debug = null);
 
 	}
 }

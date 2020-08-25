@@ -3,13 +3,8 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Entities;
 using Unity.Mathematics;
 using VisualPinball.Engine.Physics;
-using VisualPinball.Engine.VPT;
-using VisualPinball.Unity.Extensions;
-using VisualPinball.Unity.Physics.Collision;
-using VisualPinball.Unity.Physics.Event;
-using VisualPinball.Unity.VPT.Ball;
 
-namespace VisualPinball.Unity.Physics.Collider
+namespace VisualPinball.Unity
 {
 	public struct Line3DCollider
 	{
@@ -22,7 +17,7 @@ namespace VisualPinball.Unity.Physics.Collider
 
 		public static void Create(BlobBuilder builder, HitLine3D src, ref BlobPtr<Collider> dest)
 		{
-			ref var linePtr = ref UnsafeUtilityEx.As<BlobPtr<Collider>, BlobPtr<Line3DCollider>>(ref dest);
+			ref var linePtr = ref UnsafeUtility.As<BlobPtr<Collider>, BlobPtr<Line3DCollider>>(ref dest);
 			ref var collider = ref builder.Allocate(ref linePtr);
 			collider.Init(src);
 		}
@@ -57,7 +52,7 @@ namespace VisualPinball.Unity.Physics.Collider
 			hitTestBall.Position = math.mul(coll._matrix, ball.Position);
 			hitTestBall.Velocity = math.mul(coll._matrix, ball.Velocity);
 
-			ref var lineZColl = ref UnsafeUtilityEx.As<Line3DCollider, LineZCollider>(ref coll);
+			ref var lineZColl = ref UnsafeUtility.As<Line3DCollider, LineZCollider>(ref coll);
 			var hitTime = LineZCollider.HitTest(ref collEvent, in lineZColl, in hitTestBall, dTime);
 
 			// transform hit normal back to world coordinate system

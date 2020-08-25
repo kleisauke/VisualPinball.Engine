@@ -1,13 +1,12 @@
 ﻿using UnityEditor;
 using VisualPinball.Engine.VPT;
-using VisualPinball.Unity.VPT.Gate;
 
-namespace VisualPinball.Unity.Editor.Inspectors
+namespace VisualPinball.Unity.Editor
 {
-	[CustomEditor(typeof(GateBehavior))]
+	[CustomEditor(typeof(GateAuthoring))]
 	public class GateInspector : ItemInspector
 	{
-		private GateBehavior _gate;
+		private GateAuthoring _gate;
 		private bool _foldoutColorsAndFormatting = true;
 		private bool _foldoutPosition = true;
 		private bool _foldoutPhysics = true;
@@ -19,12 +18,12 @@ namespace VisualPinball.Unity.Editor.Inspectors
 		protected override void OnEnable()
 		{
 			base.OnEnable();
-			_gate = target as GateBehavior;
+			_gate = target as GateAuthoring;
 		}
 
 		public override void OnInspectorGUI()
 		{
-			base.OnPreInspectorGUI();
+			OnPreInspectorGUI();
 
 			if (_foldoutColorsAndFormatting = EditorGUILayout.BeginFoldoutHeaderGroup(_foldoutColorsAndFormatting, "Colors & Formatting")) {
 				DropDownField("Type", ref _gate.data.GateType, _gateTypeStrings, _gateTypeValues);

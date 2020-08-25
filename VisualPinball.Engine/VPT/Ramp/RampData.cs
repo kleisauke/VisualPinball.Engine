@@ -80,14 +80,17 @@ namespace VisualPinball.Engine.VPT.Ramp
 		[BiffFloat("RSCT", Pos = 21)]
 		public float Scatter;
 
+		[TextureReference]
 		[BiffString("IMAG", Pos = 10)]
-		public string Image;
+		public string Image = string.Empty;
 
+		[MaterialReference]
 		[BiffString("MATR", Pos = 5)]
-		public string Material;
+		public string Material = string.Empty;
 
+		[MaterialReference]
 		[BiffString("MAPH", Pos = 29)]
-		public string PhysicsMaterial;
+		public string PhysicsMaterial = string.Empty;
 
 		[BiffFloat("THRS", Pos = 18)]
 		public float Threshold;
@@ -115,6 +118,12 @@ namespace VisualPinball.Engine.VPT.Ramp
 
 		[BiffTag("PNTS", Pos = 1999)]
 		public bool Points;
+
+		public RampData(string name, DragPointData[] dragPoints) : base(StoragePrefix.GameItem)
+		{
+			Name = name;
+			DragPoints = dragPoints;
+		}
 
 		#region BIFF
 

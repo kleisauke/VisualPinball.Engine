@@ -8,7 +8,6 @@ namespace VisualPinball.Engine.VPT.Bumper
 	{
 		public bool IsCollidable => true;
 		public EventProxy EventProxy { get; private set; }
-		public string[] UsedMaterials => new string[] { Data.CapMaterial, Data.BaseMaterial, Data.RingMaterial, Data.SocketMaterial };
 
 		private readonly BumperMeshGenerator _meshGenerator;
 
@@ -19,7 +18,15 @@ namespace VisualPinball.Engine.VPT.Bumper
 			_meshGenerator = new BumperMeshGenerator(Data);
 		}
 
-		public Bumper(BinaryReader reader, string itemName) : this(new BumperData(reader, itemName)) { }
+		public Bumper(BinaryReader reader, string itemName) : this(new BumperData(reader, itemName))
+		{
+		}
+
+		public static Bumper GetDefault(Table.Table table)
+		{
+			var bumperData = new BumperData(table.GetNewName<Bumper>("Bumper"), table.Width / 2f, table.Height / 2f);
+			return new Bumper(bumperData);
+		}
 
 		public void Init(Table.Table table)
 		{

@@ -2,11 +2,8 @@ using Unity.Collections;
 using Unity.Entities;
 using Unity.Profiling;
 using VisualPinball.Engine.Game;
-using VisualPinball.Unity.Game;
-using VisualPinball.Unity.Physics.Event;
-using VisualPinball.Unity.Physics.SystemGroup;
 
-namespace VisualPinball.Unity.VPT.HitTarget
+namespace VisualPinball.Unity
 {
 	[UpdateInGroup(typeof(UpdateAnimationsSystemGroup))]
 	public class HitTargetAnimationSystem : SystemBase
@@ -20,6 +17,11 @@ namespace VisualPinball.Unity.VPT.HitTarget
 		{
 			_visualPinballSimulationSystemGroup = World.GetOrCreateSystem<VisualPinballSimulationSystemGroup>();
 			_eventQueue = new NativeQueue<EventData>(Allocator.Persistent);
+		}
+
+		protected override void OnDestroy()
+		{
+			_eventQueue.Dispose();
 		}
 
 		protected override void OnUpdate()

@@ -10,7 +10,6 @@ namespace VisualPinball.Engine.VPT.Ramp
 		public bool IsCollidable => true;
 		public EventProxy EventProxy { get; private set; }
 		public HitObject[] GetHitShapes() => _hits;
-		public string[] UsedMaterials => new string[] { Data.Material, Data.PhysicsMaterial };
 
 		private readonly RampMeshGenerator _meshGenerator;
 		private readonly RampHitGenerator _hitGenerator;
@@ -22,7 +21,23 @@ namespace VisualPinball.Engine.VPT.Ramp
 			_hitGenerator = new RampHitGenerator(Data, _meshGenerator);
 		}
 
-		public Ramp(BinaryReader reader, string itemName) : this(new RampData(reader, itemName)) { }
+		public Ramp(BinaryReader reader, string itemName) : this(new RampData(reader, itemName))
+		{
+		}
+
+		public static Ramp GetDefault(Table.Table table)
+		{
+			var rampData = new RampData(table.GetNewName<Ramp>("Ramp"), new[] {
+				new DragPointData(table.Width / 2f, table.Height / 2f + 200f) { HasAutoTexture = false, IsSmooth = true },
+				new DragPointData(table.Width / 2f, table.Height / 2f - 200f) { HasAutoTexture = false, IsSmooth = true }
+			}) {
+				HeightTop = 50f,
+				HeightBottom = 0f,
+				WidthTop = 60f,
+				WidthBottom = 75f
+			};
+			return new Ramp(rampData);
+		}
 
 		public void Init(Table.Table table)
 		{

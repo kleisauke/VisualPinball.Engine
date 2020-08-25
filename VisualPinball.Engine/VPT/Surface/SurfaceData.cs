@@ -41,23 +41,29 @@ namespace VisualPinball.Engine.VPT.Surface
 		[BiffFloat("THRS", Pos = 8)]
 		public float Threshold = 2.0f;
 
+		[TextureReference]
 		[BiffString("IMAG", Pos = 9)]
-		public string Image;
+		public string Image = string.Empty;
 
+		[TextureReference]
 		[BiffString("SIMG", Pos = 10)]
-		public string SideImage;
+		public string SideImage = string.Empty;
 
+		[MaterialReference]
 		[BiffString("SIMA", Pos = 11)]
-		public string SideMaterial;
+		public string SideMaterial = string.Empty;
 
+		[MaterialReference]
 		[BiffString("TOMA", Pos = 12)]
-		public string TopMaterial;
+		public string TopMaterial = string.Empty;
 
+		[MaterialReference]
 		[BiffString("MAPH", Pos = 29)]
-		public string PhysicsMaterial;
+		public string PhysicsMaterial = string.Empty;
 
+		[MaterialReference]
 		[BiffString("SLMA", Pos = 13)]
-		public string SlingShotMaterial;
+		public string SlingShotMaterial = string.Empty;
 
 		[BiffFloat("HTBT", Pos = 14)]
 		public float HeightBottom = 0f;
@@ -130,6 +136,12 @@ namespace VisualPinball.Engine.VPT.Surface
 
 		// non-persisted
 		public bool IsDisabled;
+
+		public SurfaceData(string name, DragPointData[] dragPoints) : base(StoragePrefix.GameItem)
+		{
+			Name = name;
+			DragPoints = dragPoints;
+		}
 
 		#region BIFF
 

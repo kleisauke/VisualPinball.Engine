@@ -42,7 +42,7 @@ namespace VisualPinball.Engine.VPT.Primitive
 
 		protected override float BaseHeight(Table.Table table)
 		{
-			return 0f;
+			return table.TableHeight;
 		}
 
 		protected override Tuple<Matrix3D, Matrix3D> GetTransformationMatrix(Table.Table table)
@@ -53,7 +53,7 @@ namespace VisualPinball.Engine.VPT.Primitive
 
 			// translation matrix
 			var transMatrix = new Matrix3D();
-			transMatrix.SetTranslation(Position.X, Position.Y, Position.Z);
+			transMatrix.SetTranslation(Position.X, Position.Y, Position.Z + table.TableHeight);
 
 			// translation + rotation matrix
 			var rotTransMatrix = new Matrix3D();

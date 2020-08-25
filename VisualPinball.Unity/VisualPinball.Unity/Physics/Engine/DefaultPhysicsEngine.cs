@@ -5,14 +5,8 @@ using Unity.Entities;
 using Unity.Mathematics;
 using UnityEngine;
 using VisualPinball.Engine.Common;
-using VisualPinball.Unity.Game;
-using VisualPinball.Unity.Physics.DebugUI;
-using VisualPinball.Unity.Physics.SystemGroup;
-using VisualPinball.Unity.VPT.Ball;
-using VisualPinball.Unity.VPT.Flipper;
-using VisualPinball.Unity.VPT.Table;
 
-namespace VisualPinball.Unity.Physics.Engine
+namespace VisualPinball.Unity
 {
 	public class DefaultPhysicsEngine : IPhysicsEngine
 	{
@@ -27,7 +21,7 @@ namespace VisualPinball.Unity.Physics.Engine
 		private readonly DebugFlipperSlider[] _flipperSliders = new DebugFlipperSlider[0];
 		private int _nextBallIdToNotifyDebugUI;
 
-		public void Init(TableBehavior tableBehavior)
+		public void Init(TableAuthoring tableAuthoring)
 		{
 			_entityManager = World.DefaultGameObjectInjectionWorld.EntityManager;
 			_flipperDataQuery = _entityManager.CreateEntityQuery(
@@ -44,7 +38,7 @@ namespace VisualPinball.Unity.Physics.Engine
 			visualPinballSimulationSystemGroup.Enabled = true;
 			simulateCycleSystemGroup.PhysicsEngine = this; // needed for flipper status update we don't do in all engines
 
-			_worldToLocal = tableBehavior.gameObject.transform.worldToLocalMatrix;
+			_worldToLocal = tableAuthoring.gameObject.transform.worldToLocalMatrix;
 		}
 
 		public void BallCreate(Mesh mesh, Material material, in float3 worldPos, in float3 localPos,
@@ -139,11 +133,11 @@ namespace VisualPinball.Unity.Physics.Engine
 
 		public void PushPendingCreateBallNotifications()
 		{
-			if (_nextBallIdToNotifyDebugUI == BallBehavior.NumBallsCreated)
+			if (_nextBallIdToNotifyDebugUI == BallAuthoring.NumBallsCreated)
 				return; // nothing to report
 
 			var entities = _ballDataQuery.ToEntityArray(Allocator.TempJob);
-			int numBallsToReport = BallBehavior.NumBallsCreated - _nextBallIdToNotifyDebugUI;
+			int numBallsToReport = BallAuthoring.NumBallsCreated - _nextBallIdToNotifyDebugUI;
 			foreach (var entity in entities)
 			{
 				var ballData = _entityManager.GetComponentData<BallData>(entity);
@@ -156,7 +150,7 @@ namespace VisualPinball.Unity.Physics.Engine
 
 			// error checking
 			Assert.AreEqual(0, numBallsToReport);
-			_nextBallIdToNotifyDebugUI = BallBehavior.NumBallsCreated;
+			_nextBallIdToNotifyDebugUI = BallAuthoring.NumBallsCreated;
 		}
 	}
 }

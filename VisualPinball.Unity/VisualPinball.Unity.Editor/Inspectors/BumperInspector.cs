@@ -1,12 +1,11 @@
 ﻿using UnityEditor;
-using VisualPinball.Unity.VPT.Bumper;
 
-namespace VisualPinball.Unity.Editor.Inspectors
+namespace VisualPinball.Unity.Editor
 {
-	[CustomEditor(typeof(BumperBehavior))]
+	[CustomEditor(typeof(BumperAuthoring))]
 	public class BumperInspector : ItemInspector
 	{
-		private BumperBehavior _bumper;
+		private BumperAuthoring _bumper;
 		private bool _foldoutColorsAndFormatting = true;
 		private bool _foldoutPosition = true;
 		private bool _foldoutPhysics = true;
@@ -15,12 +14,12 @@ namespace VisualPinball.Unity.Editor.Inspectors
 		protected override void OnEnable()
 		{
 			base.OnEnable();
-			_bumper = target as BumperBehavior;
+			_bumper = target as BumperAuthoring;
 		}
 
 		public override void OnInspectorGUI()
 		{
-			base.OnPreInspectorGUI();
+			OnPreInspectorGUI();
 
 			if (_foldoutColorsAndFormatting = EditorGUILayout.BeginFoldoutHeaderGroup(_foldoutColorsAndFormatting, "Colors & Formatting")) {
 				MaterialField("Cap Material", ref _bumper.data.CapMaterial);

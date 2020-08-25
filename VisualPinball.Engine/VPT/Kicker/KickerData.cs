@@ -45,11 +45,12 @@ namespace VisualPinball.Engine.VPT.Kicker
 		[BiffFloat("KORI", Pos = 13)]
 		public float Orientation = 0.0f;
 
+		[MaterialReference]
 		[BiffString("MATR", Pos = 5)]
-		public string Material;
+		public string Material = string.Empty;
 
 		[BiffString("SURF", Pos = 6)]
-		public string Surface;
+		public string Surface = string.Empty;
 
 		[BiffBool("FATH", Pos = 14)]
 		public bool FallThrough = false;
@@ -58,13 +59,19 @@ namespace VisualPinball.Engine.VPT.Kicker
 		public bool IsEnabled = true;
 
 		[BiffBool("LEMO", Pos = 15)]
-		public bool LegacyMode = false;
+		public bool LegacyMode = true;
 
 		[BiffBool("TMON", Pos = 3)]
 		public bool IsTimerEnabled;
 
 		[BiffInt("TMIN", Pos = 4)]
 		public int TimerInterval;
+
+		public KickerData(string name, float x, float y) : base(StoragePrefix.GameItem)
+		{
+			Name = name;
+			Center = new Vertex2D(x, y);
+		}
 
 		#region BIFF
 

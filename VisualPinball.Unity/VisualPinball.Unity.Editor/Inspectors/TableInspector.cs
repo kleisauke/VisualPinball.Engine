@@ -6,13 +6,10 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using VisualPinball.Engine.Common;
-using VisualPinball.Unity.Physics.DebugUI;
-using VisualPinball.Unity.Physics.Engine;
-using VisualPinball.Unity.VPT.Table;
 
-namespace VisualPinball.Unity.Editor.Inspectors
+namespace VisualPinball.Unity.Editor
 {
-	[CustomEditor(typeof(TableBehavior))]
+	[CustomEditor(typeof(TableAuthoring))]
 	[CanEditMultipleObjects]
 	public class TableInspector : UnityEditor.Editor
 	{
@@ -26,7 +23,7 @@ namespace VisualPinball.Unity.Editor.Inspectors
 
 		public override void OnInspectorGUI()
 		{
-			var tableComponent = (TableBehavior) target;
+			var tableComponent = (TableAuthoring) target;
 			DrawEngineSelector("Physics Engine", ref tableComponent.physicsEngineId, ref _physicsEngines, ref _physicsEngineNames, ref _physicsEngineIndex);
 			DrawEngineSelector("Debug UI", ref tableComponent.debugUiId, ref _debugUIs, ref _debugUINames, ref _debugUIIndex);
 

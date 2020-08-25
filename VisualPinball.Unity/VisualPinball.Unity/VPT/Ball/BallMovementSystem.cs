@@ -3,10 +3,8 @@ using Unity.Mathematics;
 using Unity.Profiling;
 using Unity.Transforms;
 using UnityEngine;
-using VisualPinball.Unity.Physics.SystemGroup;
-using VisualPinball.Unity.VPT.Table;
 
-namespace VisualPinball.Unity.VPT.Ball
+namespace VisualPinball.Unity
 {
 	[AlwaysSynchronizeSystem]
 	[UpdateInGroup(typeof(TransformMeshesSystemGroup))]
@@ -17,7 +15,7 @@ namespace VisualPinball.Unity.VPT.Ball
 
 		protected override void OnStartRunning()
 		{
-			var root = Object.FindObjectOfType<TableBehavior>();
+			var root = Object.FindObjectOfType<TableAuthoring>();
 			var ltw = root.gameObject.transform.localToWorldMatrix;
 			_baseTransform = new float4x4(
 				ltw.m00, ltw.m01, ltw.m02, ltw.m03,
@@ -35,7 +33,10 @@ namespace VisualPinball.Unity.VPT.Ball
 
 				marker.Begin();
 
-				translation.Value = math.transform(ltw, ball.Position);
+				// calculate/adapt height of ball
+				var zHeight = !ball.IsFrozen ? ball.Position.z : ball.Position.z - ball.Radius;
+
+				translation.Value = math.transform(ltw, new float3(ball.Position.x, ball.Position.y, zHeight));
 				var or = ball.Orientation;
 				rot.Value = quaternion.LookRotation(or.c2,  or.c1);
 

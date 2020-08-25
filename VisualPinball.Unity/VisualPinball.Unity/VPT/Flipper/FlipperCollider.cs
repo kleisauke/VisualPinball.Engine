@@ -5,13 +5,8 @@ using Unity.Mathematics;
 using VisualPinball.Engine.Common;
 using VisualPinball.Engine.Game;
 using VisualPinball.Engine.VPT.Flipper;
-using VisualPinball.Unity.Common;
-using VisualPinball.Unity.Physics.Collider;
-using VisualPinball.Unity.Physics.Collision;
-using VisualPinball.Unity.Physics.Event;
-using VisualPinball.Unity.VPT.Ball;
 
-namespace VisualPinball.Unity.VPT.Flipper
+namespace VisualPinball.Unity
 {
 	public struct FlipperCollider : ICollider, ICollidable
 	{
@@ -25,7 +20,7 @@ namespace VisualPinball.Unity.VPT.Flipper
 
 		public static void Create(BlobBuilder builder, FlipperHit src, ref BlobPtr<Collider> dest)
 		{
-			ref var ptr = ref UnsafeUtilityEx.As<BlobPtr<Collider>, BlobPtr<FlipperCollider>>(ref dest);
+			ref var ptr = ref UnsafeUtility.As<BlobPtr<Collider>, BlobPtr<FlipperCollider>>(ref dest);
 			ref var collider = ref builder.Allocate(ref ptr);
 			collider.Init(src);
 		}

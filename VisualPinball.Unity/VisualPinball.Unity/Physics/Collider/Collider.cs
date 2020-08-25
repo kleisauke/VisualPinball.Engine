@@ -9,20 +9,13 @@ using VisualPinball.Engine.VPT;
 using VisualPinball.Engine.VPT.Bumper;
 using VisualPinball.Engine.VPT.Flipper;
 using VisualPinball.Engine.VPT.Gate;
+using VisualPinball.Engine.VPT.Kicker;
 using VisualPinball.Engine.VPT.Plunger;
 using VisualPinball.Engine.VPT.Spinner;
 using VisualPinball.Engine.VPT.Trigger;
-using VisualPinball.Unity.Physics.Collision;
-using VisualPinball.Unity.Physics.Event;
-using VisualPinball.Unity.VPT.Ball;
-using VisualPinball.Unity.VPT.Flipper;
-using VisualPinball.Unity.VPT.Gate;
-using VisualPinball.Unity.VPT.Plunger;
-using VisualPinball.Unity.VPT.Spinner;
-using PhysicsMaterialData = VisualPinball.Unity.Physics.Collision.PhysicsMaterialData;
 using Random = Unity.Mathematics.Random;
 
-namespace VisualPinball.Unity.Physics.Collider
+namespace VisualPinball.Unity
 {
 	/// <summary>
 	/// Base struct common to all colliders.
@@ -53,6 +46,9 @@ namespace VisualPinball.Unity.Physics.Collider
 		{
 			switch (src)
 			{
+				case KickerHit kickerHit:
+					CircleCollider.Create(builder, kickerHit, ref dest, ColliderType.KickerCircle);
+					break;
 				case TriggerHitCircle triggerHitCircle:
 					CircleCollider.Create(builder, triggerHitCircle, ref dest, ColliderType.TriggerCircle);
 					break;
@@ -130,17 +126,16 @@ namespace VisualPinball.Unity.Physics.Collider
 					case ColliderType.Plane:
 						return ((PlaneCollider*) collider)->HitTest(ref collEvent, in ball, dTime);
 					case ColliderType.Poly3D:
-						return ((Poly3DCollider*) collider)->HitTest(ref collEvent, in ball, dTime);
+						return ((Poly3DCollider*) collider)->HitTest(ref collEvent, ref insideOf, in ball, dTime);
 					case ColliderType.Spinner:
 						return ((SpinnerCollider*) collider)->HitTest(ref collEvent, ref insideOf, in ball, dTime);
 					case ColliderType.Triangle:
 						return ((TriangleCollider*) collider)->HitTest(ref collEvent, in ball, dTime);
+					case ColliderType.KickerCircle:
 					case ColliderType.TriggerCircle:
-						return ((CircleCollider*) collider)->HitTestBasicRadius(ref collEvent, ref insideOf, in ball,
-							dTime, false, false, false);
+						return ((CircleCollider*) collider)->HitTestBasicRadius(ref collEvent, ref insideOf, in ball, dTime, false, false, false);
 					case ColliderType.TriggerLine:
-						return ((LineCollider*) collider)->HitTestBasic(ref collEvent, ref insideOf, in ball, dTime,
-							false, false, false);
+						return ((LineCollider*) collider)->HitTestBasic(ref collEvent, ref insideOf, in ball, dTime, false, false, false);
 
 					case ColliderType.Plunger:
 					case ColliderType.Flipper:

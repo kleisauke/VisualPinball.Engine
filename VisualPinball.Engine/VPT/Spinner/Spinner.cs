@@ -12,7 +12,6 @@ namespace VisualPinball.Engine.VPT.Spinner
 
 		public EventProxy EventProxy { get; private set; }
 		public bool IsCollidable => true;
-		public string[] UsedMaterials => new string[] { Data.Material };
 
 		private readonly SpinnerMeshGenerator _meshGenerator;
 		private readonly SpinnerHitGenerator _hitGenerator;
@@ -26,7 +25,15 @@ namespace VisualPinball.Engine.VPT.Spinner
 			_hitGenerator = new SpinnerHitGenerator(Data);
 		}
 
-		public Spinner(BinaryReader reader, string itemName) : this(new SpinnerData(reader, itemName)) { }
+		public Spinner(BinaryReader reader, string itemName) : this(new SpinnerData(reader, itemName))
+		{
+		}
+
+		public static Spinner GetDefault(Table.Table table)
+		{
+			var spinnerData = new SpinnerData(table.GetNewName<Spinner>("Spinner"), table.Width / 2f, table.Height / 2f);
+			return new Spinner(spinnerData);
+		}
 
 		public void Init(Table.Table table)
 		{

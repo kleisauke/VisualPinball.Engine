@@ -3,10 +3,8 @@ using Unity.Mathematics;
 using Unity.Profiling;
 using Unity.Transforms;
 using UnityEngine;
-using VisualPinball.Unity.Physics.SystemGroup;
-using VisualPinball.Unity.VPT.Table;
 
-namespace VisualPinball.Unity.VPT.HitTarget
+namespace VisualPinball.Unity
 {
 	[UpdateInGroup(typeof(TransformMeshesSystemGroup))]
 	public class HitTargetMovementSystem : SystemBase
@@ -16,7 +14,7 @@ namespace VisualPinball.Unity.VPT.HitTarget
 
 		protected override void OnStartRunning()
 		{
-			var root = Object.FindObjectOfType<TableBehavior>();
+			var root = Object.FindObjectOfType<TableAuthoring>();
 			var ltw = root.gameObject.transform.localToWorldMatrix;
 			_baseTransform = new float4x4(
 				ltw.m00, ltw.m01, ltw.m02, ltw.m03,

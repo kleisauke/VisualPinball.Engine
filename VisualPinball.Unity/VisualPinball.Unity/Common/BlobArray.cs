@@ -1,6 +1,6 @@
 ﻿using Unity.Collections.LowLevel.Unsafe;
 
-namespace VisualPinball.Unity.Common
+namespace VisualPinball.Unity
 {
 	// Non-generic temporary stand-in for Unity BlobArray.
 	// This is to work around C# wanting to treat any struct containing the generic Unity.BlobArray<T> as a managed struct.
@@ -26,7 +26,7 @@ namespace VisualPinball.Unity.Common
 				}
 			}
 
-			public ref T this[int index] => ref UnsafeUtilityEx.ArrayElementAsRef<T>((byte*)m_OffsetPtr + *m_OffsetPtr, index);
+			public ref T this[int index] => ref UnsafeUtility.ArrayElementAsRef<T>((byte*)m_OffsetPtr + *m_OffsetPtr, index);
 
 			public Enumerator GetEnumerator() => new Enumerator(m_OffsetPtr, Length);
 
@@ -36,7 +36,7 @@ namespace VisualPinball.Unity.Common
 				private readonly int m_Length;
 				private int m_Index;
 
-				public T Current => UnsafeUtilityEx.ArrayElementAsRef<T>((byte*)m_OffsetPtr + *m_OffsetPtr, m_Index);
+				public T Current => UnsafeUtility.ArrayElementAsRef<T>((byte*)m_OffsetPtr + *m_OffsetPtr, m_Index);
 
 				public Enumerator(int* offsetPtr, int length)
 				{

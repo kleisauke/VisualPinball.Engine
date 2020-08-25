@@ -1,8 +1,9 @@
-﻿using Unity.Entities;
+﻿using System;
+using Unity.Entities;
 using VisualPinball.Engine.Physics;
 using VisualPinball.Engine.VPT;
 
-namespace VisualPinball.Unity.Physics.Collision
+namespace VisualPinball.Unity
 {
 	/// <summary>
 	/// The common data to all colliders.
@@ -38,6 +39,9 @@ namespace VisualPinball.Unity.Physics.Collision
 
 		public void Init(ColliderType type, HitObject src)
 		{
+			if (src.ItemIndex == 0 && src.ItemVersion == 0) {
+				throw new InvalidOperationException("Entity of " + type + " " + src.GetType().Name + " is null!");
+			}
 			Type = type;
 			ItemType = src.ObjType;
 			Id = src.Id;

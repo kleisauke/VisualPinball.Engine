@@ -11,8 +11,6 @@ namespace VisualPinball.Engine.VPT.Primitive
 	/// <see href="https://github.com/vpinball/vpinball/blob/master/primitive.cpp"/>
 	public class Primitive : Item<PrimitiveData>, IRenderable
 	{
-		public string[] UsedMaterials => new string[] { Data.Material, Data.PhysicsMaterial };
-
 		private readonly PrimitiveMeshGenerator _meshGenerator;
 
 		public Primitive(PrimitiveData data) : base(data)
@@ -20,7 +18,15 @@ namespace VisualPinball.Engine.VPT.Primitive
 			_meshGenerator = new PrimitiveMeshGenerator(Data);
 		}
 
-		public Primitive(BinaryReader reader, string itemName) : this(new PrimitiveData(reader, itemName)) { }
+		public Primitive(BinaryReader reader, string itemName) : this(new PrimitiveData(reader, itemName))
+		{
+		}
+
+		public static Primitive GetDefault(Table.Table table)
+		{
+			var primitiveData = new PrimitiveData(table.GetNewName<Primitive>("Primitive"), table.Width / 2f, table.Height / 2f);
+			return new Primitive(primitiveData);
+		}
 
 		public RenderObjectGroup GetRenderObjects(Table.Table table, Origin origin, bool asRightHanded, string parent, PbrMaterial material)
 		{

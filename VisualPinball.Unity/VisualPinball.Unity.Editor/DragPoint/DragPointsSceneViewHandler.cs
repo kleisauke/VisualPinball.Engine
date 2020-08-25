@@ -3,11 +3,9 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using VisualPinball.Engine.Math;
-using VisualPinball.Unity.Extensions;
-using VisualPinball.Unity.VPT;
 using Color = UnityEngine.Color;
 
-namespace VisualPinball.Unity.Editor.DragPoint
+namespace VisualPinball.Unity.Editor
 {
 	public class DragPointsSceneViewHandler
 	{
@@ -63,7 +61,7 @@ namespace VisualPinball.Unity.Editor.DragPoint
 				var transformedDPoints = new List<DragPointData>();
 				foreach (var controlPoint in _handler.ControlPoints) {
 					var newDp = new DragPointData(controlPoint.DragPoint) {
-						Vertex = controlPoint.WorldPos.ToVertex3D()
+						Center = controlPoint.WorldPos.ToVertex3D()
 					};
 					transformedDPoints.Add(newDp);
 				}
@@ -72,7 +70,7 @@ namespace VisualPinball.Unity.Editor.DragPoint
 				vAccuracy = _handler.Transform.localToWorldMatrix.MultiplyVector(vAccuracy);
 				var accuracy = Mathf.Abs(vAccuracy.x * vAccuracy.y * vAccuracy.z);
 				accuracy *= HandleUtility.GetHandleSize(_handler.CurveTravellerPosition) * ControlPoint.ScreenRadius;
-				var vVertex = Engine.Math.DragPoint.GetRgVertex<RenderVertex3D, CatmullCurve3DCatmullCurveFactory>(
+				var vVertex = DragPoint.GetRgVertex<RenderVertex3D, CatmullCurve3DCatmullCurveFactory>(
 					transformedDPoints.ToArray(), _handler.DragPointEditable.PointsAreLooping(), accuracy
 				);
 

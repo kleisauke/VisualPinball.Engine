@@ -3,7 +3,6 @@ using System.IO;
 using System.Text;
 using NetVips;
 using NLog;
-using VisualPinball.Engine.Resources;
 using VisualPinball.Resources;
 
 namespace VisualPinball.Engine.VPT
@@ -58,6 +57,11 @@ namespace VisualPinball.Engine.VPT
 		public bool UsageNormalMap;
 
 		private TextureStats _stats;
+
+		public Texture(string name) : base(new TextureData(name))
+		{
+			Name = name;
+		}
 
 		public Texture(TextureData data) : base(data) { }
 

@@ -141,12 +141,12 @@ namespace VisualPinball.Engine.Game
 			_hitTopGlass = _table.GenerateGlassHit();
 
 			// index flippers
-			_flipperMovers = _table.Flippers.Values.Select(f => f.FlipperMover).ToArray();
+			_flipperMovers = _table.GetAll<Flipper>().Select(f => f.FlipperMover).ToArray();
 		}
 
 		private void InitOcTree(Table table)
 		{
-			_hitOcTree = new HitQuadTree(_hitObjects, table.Data.BoundingBox);
+			_hitOcTree = new HitQuadTree(_hitObjects, table.BoundingBox);
 
 			// initialize hit structure for dynamic objects
 			_hitOcTreeDynamic.FillFromVector(_hitObjectsDynamic);

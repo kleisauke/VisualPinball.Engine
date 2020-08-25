@@ -1,16 +1,15 @@
 ﻿using Unity.Entities;
 using VisualPinball.Engine.Common;
-using VisualPinball.Unity.VPT.Table;
 
-namespace VisualPinball.Unity.Physics.DebugUI
+namespace VisualPinball.Unity
 {
 	public interface IDebugUI : IEngine
 	{
 		/// <summary>
 		/// Initializes the debug UI. This is called in the table's Start() method.
 		/// </summary>
-		/// <param name="tableBehavior">Table component</param>
-		void Init(TableBehavior tableBehavior);
+		/// <param name="tableAuthoring">Table component</param>
+		void Init(TableAuthoring tableAuthoring);
 
 		/// <summary>
 		/// Called when a physics cycle has completed.

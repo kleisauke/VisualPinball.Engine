@@ -9,7 +9,6 @@ namespace VisualPinball.Engine.VPT.Plunger
 		public bool IsCollidable => true;
 		public EventProxy EventProxy { get; private set; }
 		public PlungerHit PlungerHit { get; private set; }
-		public string[] UsedMaterials => new string[] { Data.Material };
 
 		public const float PlungerHeight = 50.0f;
 		public const float PlungerMass = 30.0f;
@@ -24,7 +23,15 @@ namespace VisualPinball.Engine.VPT.Plunger
 			MeshGenerator = new PlungerMeshGenerator(data);
 		}
 
-		public Plunger(BinaryReader reader, string itemName) : this(new PlungerData(reader, itemName)) { }
+		public Plunger(BinaryReader reader, string itemName) : this(new PlungerData(reader, itemName))
+		{
+		}
+
+		public static Plunger GetDefault(Table.Table table)
+		{
+			var plungerData = new PlungerData(table.GetNewName<Plunger>("Plunger"), table.Width / 2f, table.Height / 2f);
+			return new Plunger(plungerData);
+		}
 
 		public void Init(Table.Table table)
 		{

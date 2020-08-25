@@ -5,12 +5,8 @@ using Unity.Mathematics;
 using VisualPinball.Engine.Common;
 using VisualPinball.Engine.Physics;
 using VisualPinball.Engine.VPT;
-using VisualPinball.Unity.Extensions;
-using VisualPinball.Unity.Physics.Collision;
-using VisualPinball.Unity.Physics.Event;
-using VisualPinball.Unity.VPT.Ball;
 
-namespace VisualPinball.Unity.Physics.Collider
+namespace VisualPinball.Unity
 {
 	public struct LineCollider : ICollider, ICollidable
 	{
@@ -32,7 +28,7 @@ namespace VisualPinball.Unity.Physics.Collider
 
 		public static void Create(BlobBuilder builder, LineSeg src, ref BlobPtr<Collider> dest, ColliderType type = ColliderType.Line)
 		{
-			ref var linePtr = ref UnsafeUtilityEx.As<BlobPtr<Collider>, BlobPtr<LineCollider>>(ref dest);
+			ref var linePtr = ref UnsafeUtility.As<BlobPtr<Collider>, BlobPtr<LineCollider>>(ref dest);
 			ref var collider = ref builder.Allocate(ref linePtr);
 			collider.Init(src, type);
 		}

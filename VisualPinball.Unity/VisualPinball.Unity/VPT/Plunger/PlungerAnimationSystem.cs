@@ -1,8 +1,7 @@
 using Unity.Entities;
 using Unity.Profiling;
-using VisualPinball.Unity.Physics.SystemGroup;
 
-namespace VisualPinball.Unity.VPT.Plunger
+namespace VisualPinball.Unity
 {
 	[UpdateInGroup(typeof(UpdateAnimationsSystemGroup))]
 	public class PlungerAnimationSystem : SystemBase
@@ -24,7 +23,7 @@ namespace VisualPinball.Unity.VPT.Plunger
 				var frame = frame0 < 0 ? 0 : frame0 >= staticData.NumFrames ? staticData.NumFrames - 1 : frame0;
 
 
-				if (animationDatas.Exists(staticData.RodEntity)) {
+				if (animationDatas.HasComponent(staticData.RodEntity)) {
 					var rodAnimData = animationDatas[staticData.RodEntity];
 					if (rodAnimData.CurrentFrame != frame) {
 						rodAnimData.CurrentFrame = frame;
@@ -33,7 +32,7 @@ namespace VisualPinball.Unity.VPT.Plunger
 					}
 				}
 
-				if (animationDatas.Exists(staticData.SpringEntity)) {
+				if (animationDatas.HasComponent(staticData.SpringEntity)) {
 					var springAnimData = animationDatas[staticData.SpringEntity];
 					if (springAnimData.CurrentFrame != frame) {
 						springAnimData.CurrentFrame = frame;
@@ -42,7 +41,7 @@ namespace VisualPinball.Unity.VPT.Plunger
 					}
 				}
 
-				if (animationDatas.Exists(staticData.FlatEntity)) {
+				if (animationDatas.HasComponent(staticData.FlatEntity)) {
 					var flatAnimData = animationDatas[staticData.FlatEntity];
 					if (flatAnimData.CurrentFrame != frame) {
 						flatAnimData.CurrentFrame = frame;

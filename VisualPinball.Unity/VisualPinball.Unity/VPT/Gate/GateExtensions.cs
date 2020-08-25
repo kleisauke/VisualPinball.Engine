@@ -2,19 +2,19 @@
 using UnityEngine;
 using VisualPinball.Engine.Game;
 
-namespace VisualPinball.Unity.VPT.Gate
+namespace VisualPinball.Unity
 {
 	public static class GateExtensions
 	{
-		public static GateBehavior SetupGameObject(this Engine.VPT.Gate.Gate gate, GameObject obj, RenderObjectGroup rog)
+		public static GateAuthoring SetupGameObject(this Engine.VPT.Gate.Gate gate, GameObject obj, RenderObjectGroup rog)
 		{
-			var ic = obj.AddComponent<GateBehavior>().SetData(gate.Data);
+			var ic = obj.AddComponent<GateAuthoring>().SetItem(gate);
 			obj.AddComponent<ConvertToEntity>();
 
 			var wire = obj.transform.Find("Wire").gameObject;
-			wire.AddComponent<GateWireBehavior>().SetData(gate.Data, "Wire");
+			wire.AddComponent<GateWireAuthoring>().SetItem(gate, "Wire");
 
-			return ic as GateBehavior;
+			return ic as GateAuthoring;
 		}
 	}
 }

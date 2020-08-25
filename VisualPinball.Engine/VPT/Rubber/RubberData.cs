@@ -27,7 +27,7 @@ namespace VisualPinball.Engine.VPT.Rubber
 		public float Height = 25f;
 
 		[BiffFloat("HTHI", Pos = 2)]
-		public float HitHeight = -1.0f;
+		public float HitHeight = 25f;
 
 		[BiffInt("WDTP", Pos = 3)]
 		public int Thickness = 8;
@@ -35,11 +35,13 @@ namespace VisualPinball.Engine.VPT.Rubber
 		[BiffBool("HTEV", Pos = 4)]
 		public bool HitEvent = false;
 
+		[MaterialReference]
 		[BiffString("MATR", Pos = 5)]
-		public string Material;
+		public string Material = string.Empty;
 
+		[TextureReference]
 		[BiffString("IMAG", Pos = 9)]
-		public string Image;
+		public string Image = string.Empty;
 
 		[BiffFloat("ELAS", Pos = 10)]
 		public float Elasticity;
@@ -77,8 +79,9 @@ namespace VisualPinball.Engine.VPT.Rubber
 		[BiffFloat("ROTZ", Pos = 20)]
 		public float RotZ = 0f;
 
+		[MaterialReference]
 		[BiffString("MAPH", Pos = 22)]
-		public string PhysicsMaterial;
+		public string PhysicsMaterial = string.Empty;
 
 		[BiffBool("OVPH", Pos = 23)]
 		public bool OverwritePhysics = false;
@@ -103,6 +106,11 @@ namespace VisualPinball.Engine.VPT.Rubber
 		public bool GetOverwritePhysics() => OverwritePhysics;
 		public bool GetIsCollidable() => IsCollidable;
 		public string GetPhysicsMaterial() => PhysicsMaterial;
+
+		public RubberData(string name) : base(StoragePrefix.GameItem)
+		{
+			Name = name;
+		}
 
 		#region BIFF
 

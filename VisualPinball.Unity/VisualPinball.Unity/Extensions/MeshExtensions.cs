@@ -1,14 +1,15 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering;
 using VisualPinball.Engine.Math;
 
-namespace VisualPinball.Unity.Extensions
+namespace VisualPinball.Unity
 {
 	public static class MeshExtensions
 	{
-		public static Engine.VPT.Mesh ToVpMesh(this UnityEngine.Mesh unityMesh)
+		public static Engine.VPT.Mesh ToVpMesh(this Mesh unityMesh)
 		{
 			var vpMesh = new Engine.VPT.Mesh(unityMesh.name);
-			vpMesh.Vertices = new Engine.Math.Vertex3DNoTex2[unityMesh.vertexCount];
+			vpMesh.Vertices = new Vertex3DNoTex2[unityMesh.vertexCount];
 			for (int i = 0; i < vpMesh.Vertices.Length; i++) {
 				var unityVertex = unityMesh.vertices[i];
 				var unityNormal = unityMesh.normals[i];
@@ -22,15 +23,19 @@ namespace VisualPinball.Unity.Extensions
 			return vpMesh;
 		}
 
-		public static UnityEngine.Mesh ToUnityMesh(this Engine.VPT.Mesh vpMesh, string name = null)
+		public static Mesh ToUnityMesh(this Engine.VPT.Mesh vpMesh, string name = null)
 		{
-			var mesh = new UnityEngine.Mesh { name = name ?? vpMesh.Name };
+			var mesh = new Mesh { name = name ?? vpMesh.Name };
 			vpMesh.ApplyToUnityMesh(mesh);
 			return mesh;
 		}
 
-		public static void ApplyToUnityMesh(this Engine.VPT.Mesh vpMesh, UnityEngine.Mesh mesh)
+		public static void ApplyToUnityMesh(this Engine.VPT.Mesh vpMesh, Mesh mesh)
 		{
+			if (vpMesh.Indices.Length > 65535) {
+				mesh.indexFormat = IndexFormat.UInt32;
+			}
+
 			// vertices
 			var vertices = new Vector3[vpMesh.Vertices.Length];
 			var normals = new Vector3[vpMesh.Vertices.Length];

@@ -4,11 +4,11 @@ using System;
 using System.Text;
 using NLog;
 using VisualPinball.Engine.VPT;
-using VisualPinball.Unity.Import.Material;
-using VisualPinball.Unity.VPT.Table;
+using VisualPinball.Unity.Patcher.Matcher;
 using Logger = NLog.Logger;
+using Material = UnityEngine.Material;
 
-namespace VisualPinball.Unity.Extensions
+namespace VisualPinball.Unity
 {
 	public static class MaterialExtensions
 	{
@@ -26,22 +26,20 @@ namespace VisualPinball.Unity.Extensions
 		/// <returns></returns>
 		private static IMaterialConverter CreateMaterialConverter()
 		{
-			if (UnityEngine.Rendering.GraphicsSettings.renderPipelineAsset != null)
+			switch (RenderPipeline.Current)
 			{
-				if (UnityEngine.Rendering.GraphicsSettings.renderPipelineAsset.GetType().Name.Contains("UniversalRenderPipelineAsset"))
-				{
-					return new UrpMaterialConverter();
-				}
-				else if (UnityEngine.Rendering.GraphicsSettings.renderPipelineAsset.GetType().Name.Contains("HDRenderPipelineAsset"))
-				{
+				case RenderPipelineType.BuiltIn:
+					return new StandardMaterialConverter();
+				case RenderPipelineType.Hdrp:
 					return new HdrpMaterialConverter();
-				}
+				case RenderPipelineType.Urp:
+					return new UrpMaterialConverter();
+				default:
+					throw new ArgumentOutOfRangeException();
 			}
-
-			return new StandardMaterialConverter();
 		}
 
-		public static UnityEngine.Material ToUnityMaterial(this PbrMaterial vpxMaterial, TableBehavior table, StringBuilder debug = null)
+		public static Material ToUnityMaterial(this PbrMaterial vpxMaterial, TableAuthoring table, StringBuilder debug = null)
 		{
 			if (table != null)
 			{

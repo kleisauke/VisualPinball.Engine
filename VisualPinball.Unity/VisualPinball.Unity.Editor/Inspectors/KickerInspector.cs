@@ -1,13 +1,12 @@
 ﻿using UnityEditor;
 using VisualPinball.Engine.VPT;
-using VisualPinball.Unity.VPT.Kicker;
 
-namespace VisualPinball.Unity.Editor.Inspectors
+namespace VisualPinball.Unity.Editor
 {
-	[CustomEditor(typeof(KickerBehavior))]
+	[CustomEditor(typeof(KickerAuthoring))]
 	public class KickerInspector : ItemInspector
 	{
-		private KickerBehavior _kicker;
+		private KickerAuthoring _kicker;
 		private bool _foldoutColorsAndFormatting = true;
 		private bool _foldoutPosition = true;
 		private bool _foldoutPhysics = true;
@@ -35,12 +34,12 @@ namespace VisualPinball.Unity.Editor.Inspectors
 		protected override void OnEnable()
 		{
 			base.OnEnable();
-			_kicker = target as KickerBehavior;
+			_kicker = target as KickerAuthoring;
 		}
 
 		public override void OnInspectorGUI()
 		{
-			base.OnPreInspectorGUI();
+			OnPreInspectorGUI();
 
 			if (_foldoutColorsAndFormatting = EditorGUILayout.BeginFoldoutHeaderGroup(_foldoutColorsAndFormatting, "Colors & Formatting")) {
 				MaterialField("Material", ref _kicker.data.Material);

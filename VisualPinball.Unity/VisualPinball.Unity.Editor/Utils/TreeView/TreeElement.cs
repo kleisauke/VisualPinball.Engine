@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace VisualPinball.Unity.Editor.Utils.TreeView
+namespace VisualPinball.Unity.Editor
 {
 	/// <summary>
 	/// TreeElement is the base class used by <see cref="TreeView{T}"/>, you'll have to inherit from it.
@@ -52,12 +52,14 @@ namespace VisualPinball.Unity.Editor.Utils.TreeView
 			child?.ReParent(this);
 		}
 
-		public virtual void ReParent(TreeElement newParent)
+		public virtual TreeElement ReParent(TreeElement newParent)
 		{
-			Parent?.Children.Remove(this);
+			var oldParent = Parent;
+			oldParent?.Children.Remove(this);
 			newParent?.Children.Add(this);
 			Parent = newParent;
 			UpdateDepth();
+			return oldParent;
 		}
 
 		private void UpdateDepth()

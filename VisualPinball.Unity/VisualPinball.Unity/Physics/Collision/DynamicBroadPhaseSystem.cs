@@ -1,9 +1,8 @@
 ﻿using Unity.Collections;
 using Unity.Entities;
 using Unity.Profiling;
-using VisualPinball.Unity.VPT.Ball;
 
-namespace VisualPinball.Unity.Physics.Collision
+namespace VisualPinball.Unity
 {
 	[DisableAutoCreation]
 	public class DynamicBroadPhaseSystem : SystemBase
@@ -42,6 +41,11 @@ namespace VisualPinball.Unity.Physics.Collision
 				.WithName("StaticBroadPhaseJob")
 				.WithNativeDisableParallelForRestriction(overlappingEntities)
 				.ForEach((Entity entity, in BallData ball) => {
+
+					// don't play with frozen balls
+					if (ball.IsFrozen) {
+						return;
+					}
 
 					marker.Begin();
 

@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using VisualPinball.Engine.IO;
-using VisualPinball.Engine.Resources;
 using VisualPinball.Engine.VPT.Table;
 using VisualPinball.Resources;
 
@@ -37,6 +36,11 @@ namespace VisualPinball.Engine.VPT
 
 		[BiffByte("DATA", Pos = 5)]
 		public byte[] Data;
+
+		public BinaryData(string name) : base(name)
+		{
+			Data = new byte[0];
+		}
 
 		public BinaryData(Resource res) : base(res.Name)
 		{

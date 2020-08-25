@@ -3,10 +3,9 @@ using NLog;
 using Unity.Entities;
 using UnityEngine;
 using VisualPinball.Engine.Physics;
-using VisualPinball.Unity.VPT.Table;
 using Logger = NLog.Logger;
 
-namespace VisualPinball.Unity.Physics.Collision
+namespace VisualPinball.Unity
 {
 	[UpdateInGroup(typeof(GameObjectAfterConversionGroup))]
 	public class QuadTreeConversionSystem : GameObjectConversionSystem
@@ -20,7 +19,7 @@ namespace VisualPinball.Unity.Physics.Collision
 				return;
 			}
 
-			var table = Object.FindObjectOfType<TableBehavior>().Table;
+			var table = Object.FindObjectOfType<TableAuthoring>().Table;
 
 			foreach (var playable in table.Playables) {
 				playable.Init(table);
@@ -31,8 +30,7 @@ namespace VisualPinball.Unity.Physics.Collision
 			var id = 0;
 			foreach (var item in table.Hittables) {
 				foreach (var hitObject in item.GetHitShapes()) {
-					hitObject.ItemIndex = item.Index;
-					hitObject.ItemVersion = item.Version;
+					hitObject.SetIndex(item.Index, item.Version);
 					hitObject.Id = id++;
 					hitObject.CalcHitBBox();
 					hitObjects.Add(hitObject);
@@ -40,7 +38,7 @@ namespace VisualPinball.Unity.Physics.Collision
 			}
 
 			// construct quad tree
-			var quadTree = new HitQuadTree(hitObjects, table.Data.BoundingBox);
+			var quadTree = new HitQuadTree(hitObjects, table.BoundingBox);
 			var quadTreeBlobAssetRef = QuadTreeBlob.CreateBlobAssetReference(
 				quadTree,
 				table.GeneratePlayfieldHit(), // todo use `null` if separate playfield mesh exists

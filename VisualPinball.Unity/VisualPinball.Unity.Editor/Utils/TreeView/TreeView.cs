@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
-using UnityEngine;
 
-
-namespace VisualPinball.Unity.Editor.Utils.TreeView
+namespace VisualPinball.Unity.Editor
 {
 	/// <summary>
 	/// An ImGui TreeView which will handle a provided generic TreeElement type
@@ -15,11 +13,16 @@ namespace VisualPinball.Unity.Editor.Utils.TreeView
 	/// It'll also fire events for several base TreeView events (Tree rebuild & update, item double click...)
 	/// </summary>
 	/// <typeparam name="T">a TreeElement generic class</typeparam>
-	internal class TreeView<T> : UnityEditor.IMGUI.Controls.TreeView where T : TreeElement
+	internal class TreeView<T> : TreeView where T : TreeElement
 	{
+		/// <summary>
+		/// Name of the DragAndDrop GenericData which will be set for transfering item ids
+		/// </summary>
+		protected const string DragAndDropItemsTask = "TreeViewItemsTask";
+
 		#region Events
 		public event Action<T> TreeRebuilt;
-		public event Action<T> ItemDoubleClicked;
+		public event Action<T[]> ItemDoubleClicked;
 		public event Action<T[]> ItemContextClicked;
 		#endregion
 
@@ -174,10 +177,8 @@ namespace VisualPinball.Unity.Editor.Utils.TreeView
 		protected override void DoubleClickedItem(int id)
 		{
 			base.DoubleClickedItem(id);
-			var item = Root.Find<T>(id);
-			if (item != null) {
-				ItemDoubleClicked?.Invoke(item);
-			}
+			var selectedItems = GetSelection().Select(Id => Root.Find<T>(Id));
+			ItemDoubleClicked?.Invoke(selectedItems.ToArray());
 		}
 		#endregion
 
@@ -194,16 +195,31 @@ namespace VisualPinball.Unity.Editor.Utils.TreeView
 		protected override void SetupDragAndDrop(SetupDragAndDropArgs args)
 		{
 			DragAndDrop.PrepareStartDrag();
-			DragAndDrop.paths = args.draggedItemIDs.Select<int, string>(e => e.ToString()).ToArray();
+			DragAndDrop.SetGenericData(DragAndDropItemsTask, args.draggedItemIDs);
 			DragAndDrop.StartDrag($"{args.draggedItemIDs.Count} tree item(s)");
 		}
 
 		protected virtual DragAndDropVisualMode HandleElementsDragAndDrop(DragAndDropArgs args, T[] elements) => DragAndDropVisualMode.Generic;
 		protected override DragAndDropVisualMode HandleDragAndDrop(DragAndDropArgs args)
 		{
-			var idList = DragAndDrop.paths.Select<string, int>(e => Int32.Parse(e));
-			var elements = Root.GetChildren<T>(element => idList.Contains(element.Id));
-			return HandleElementsDragAndDrop(args, elements.ToArray());
+			//Get Id list from GenericData if the DragAndDrop was initiated by the TreeView
+			var idList = DragAndDrop.GetGenericData(DragAndDropItemsTask) as IList<int>;
+
+			if (args.performDrop) {
+				DragAndDrop.SetGenericData(DragAndDropItemsTask, null);
+			}
+
+			if (idList == null) {
+				//Check for gameObjects inside the DragAndDrop task (could come from the SceneHierarchy)
+				idList = DragAndDrop.objectReferences.Select(obj => obj.GetInstanceID()).ToList();
+			}
+
+			if (idList != null) {
+				var elements = Root.GetChildren<T>(element => idList.Contains(element.Id));
+				return HandleElementsDragAndDrop(args, elements.ToArray());
+			}
+
+			return DragAndDropVisualMode.None;
 		}
 		#endregion
 	}

@@ -2,15 +2,15 @@
 using UnityEngine;
 using VisualPinball.Engine.Game;
 
-namespace VisualPinball.Unity.VPT.Trigger
+namespace VisualPinball.Unity
 {
 	public static class TriggerExtensions
 	{
-		public static TriggerBehavior SetupGameObject(this Engine.VPT.Trigger.Trigger trigger, GameObject obj, RenderObjectGroup rog)
+		public static TriggerAuthoring SetupGameObject(this Engine.VPT.Trigger.Trigger trigger, GameObject obj, RenderObjectGroup rog)
 		{
-			var ic = obj.AddComponent<TriggerBehavior>().SetData(trigger.Data);
+			var ic = obj.AddComponent<TriggerAuthoring>().SetItem(trigger);
 			obj.AddComponent<ConvertToEntity>();
-			return ic as TriggerBehavior;
+			return ic as TriggerAuthoring;
 		}
 	}
 }

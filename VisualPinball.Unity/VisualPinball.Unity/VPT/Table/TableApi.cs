@@ -1,24 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using VisualPinball.Unity.VPT.Flipper;
-using VisualPinball.Unity.VPT.Gate;
-using VisualPinball.Unity.VPT.HitTarget;
-using VisualPinball.Unity.VPT.Kicker;
-using VisualPinball.Unity.VPT.Plunger;
-using VisualPinball.Unity.VPT.Rubber;
-using VisualPinball.Unity.VPT.Spinner;
-using VisualPinball.Unity.VPT.Surface;
-using VisualPinball.Unity.VPT.Trigger;
 
-namespace VisualPinball.Unity.VPT.Table
+namespace VisualPinball.Unity
 {
 	public class TableApi : IApiInitializable
 	{
+		internal readonly Dictionary<string, BumperApi> Bumpers = new Dictionary<string, BumperApi>();
 		internal readonly Dictionary<string, FlipperApi> Flippers = new Dictionary<string, FlipperApi>();
 		internal readonly Dictionary<string, GateApi> Gates = new Dictionary<string, GateApi>();
 		internal readonly Dictionary<string, HitTargetApi> HitTargets = new Dictionary<string, HitTargetApi>();
 		internal readonly Dictionary<string, KickerApi> Kickers = new Dictionary<string, KickerApi>();
 		internal readonly Dictionary<string, PlungerApi> Plungers = new Dictionary<string, PlungerApi>();
+		internal readonly Dictionary<string, RampApi> Ramps = new Dictionary<string, RampApi>();
 		internal readonly Dictionary<string, RubberApi> Rubbers = new Dictionary<string, RubberApi>();
 		internal readonly Dictionary<string, SpinnerApi> Spinners = new Dictionary<string, SpinnerApi>();
 		internal readonly Dictionary<string, SurfaceApi> Surfaces = new Dictionary<string, SurfaceApi>();
@@ -28,6 +21,13 @@ namespace VisualPinball.Unity.VPT.Table
 		/// Event emitted before the game starts.
 		/// </summary>
 		public event EventHandler Init;
+
+		/// <summary>
+		/// Returns a bumper by name.
+		/// </summary>
+		/// <param name="name">Name of the bumper</param>
+		/// <returns>Bumper or `null` if no bumper with that name exists.</returns>
+		public BumperApi Bumper(string name) => Bumpers.ContainsKey(name) ? Bumpers[name] : null;
 
 		/// <summary>
 		/// Returns a flipper by name.
@@ -63,6 +63,13 @@ namespace VisualPinball.Unity.VPT.Table
 		/// <param name="name">Name of the plunger</param>
 		/// <returns>Plunger or `null` if no plunger with that name exists.</returns>
 		public PlungerApi Plunger(string name) => Plungers.ContainsKey(name) ? Plungers[name] : null;
+
+		/// <summary>
+		/// Returns a ramp by name.
+		/// </summary>
+		/// <param name="name">Name of the ramp</param>
+		/// <returns>Ramp or `null` if no ramp with that name exists.</returns>
+		public RampApi Ramp(string name) => Ramps.ContainsKey(name) ? Ramps[name] : null;
 
 		/// <summary>
 		/// Returns a rubber by name.

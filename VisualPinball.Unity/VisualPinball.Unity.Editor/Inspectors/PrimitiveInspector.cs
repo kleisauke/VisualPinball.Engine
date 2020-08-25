@@ -1,16 +1,13 @@
 ﻿using UnityEditor;
 using UnityEngine;
 using VisualPinball.Engine.Game;
-using VisualPinball.Unity.Extensions;
-using VisualPinball.Unity.VPT.Primitive;
-using VisualPinball.Unity.VPT.Table;
 
-namespace VisualPinball.Unity.Editor.Inspectors
+namespace VisualPinball.Unity.Editor
 {
-	[CustomEditor(typeof(PrimitiveBehavior))]
+	[CustomEditor(typeof(PrimitiveAuthoring))]
 	public class PrimitiveInspector : ItemInspector
 	{
-		private PrimitiveBehavior _prim;
+		private PrimitiveAuthoring _prim;
 		private bool _foldoutColorsAndFormatting = true;
 		private bool _foldoutPosition = true;
 		private bool _foldoutPhysics = true;
@@ -18,12 +15,12 @@ namespace VisualPinball.Unity.Editor.Inspectors
 		protected override void OnEnable()
 		{
 			base.OnEnable();
-			_prim = target as PrimitiveBehavior;
+			_prim = target as PrimitiveAuthoring;
 		}
 
 		public override void OnInspectorGUI()
 		{
-			base.OnPreInspectorGUI();
+			OnPreInspectorGUI();
 
 			if (_foldoutColorsAndFormatting = EditorGUILayout.BeginFoldoutHeaderGroup(_foldoutColorsAndFormatting, "Colors & Formatting")) {
 				GUILayout.BeginHorizontal();
@@ -110,7 +107,7 @@ namespace VisualPinball.Unity.Editor.Inspectors
 		private void MeshImporterGui()
 		{
 			EditorGUI.BeginChangeCheck();
-			var mesh = (UnityEngine.Mesh)EditorGUILayout.ObjectField("Import Mesh", null, typeof(UnityEngine.Mesh), false);
+			var mesh = (Mesh)EditorGUILayout.ObjectField("Import Mesh", null, typeof(Mesh), false);
 			if (mesh != null && EditorGUI.EndChangeCheck()) {
 				FinishEdit("Import Mesh", true);
 				_prim.data.Use3DMesh = true;
@@ -123,7 +120,7 @@ namespace VisualPinball.Unity.Editor.Inspectors
 		/// </summary>
 		private void ExportMesh()
 		{
-			var table = _prim.GetComponentInParent<TableBehavior>();
+			var table = _prim.GetComponentInParent<TableAuthoring>();
 			if (table != null) {
 				var rog = _prim.Item.GetRenderObjects(table.Table, Origin.Original, false);
 				if (rog != null && rog.RenderObjects.Length > 0) {

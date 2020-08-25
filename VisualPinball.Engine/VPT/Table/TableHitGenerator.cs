@@ -6,11 +6,13 @@ namespace VisualPinball.Engine.VPT.Table
 {
 	public class TableHitGenerator
 	{
+		private readonly Table _table;
 		private readonly TableData _data;
 
-		public TableHitGenerator(TableData data)
+		public TableHitGenerator(Table table)
 		{
-			_data = data;
+			_data = table.Data;
+			_table = table;
 		}
 
 		public IEnumerable<HitObject> GenerateHitObjects()
@@ -21,39 +23,39 @@ namespace VisualPinball.Engine.VPT.Table
 				new LineSeg(
 					new Vertex2D(_data.Right, _data.Top),
 					new Vertex2D(_data.Right, _data.Bottom),
-					_data.TableHeight,
-					_data.GlassHeight,
+					_table.TableHeight,
+					_table.GlassHeight,
 					ItemType.Table
 				),
 				new LineSeg(
 					new Vertex2D(_data.Left, _data.Bottom),
 					new Vertex2D(_data.Left, _data.Top),
-					_data.TableHeight,
-					_data.GlassHeight,
+					_table.TableHeight,
+					_table.GlassHeight,
 					ItemType.Table
 				),
 				new LineSeg(
 					new Vertex2D(_data.Right, _data.Bottom),
 					new Vertex2D(_data.Left, _data.Bottom),
-					_data.TableHeight,
-					_data.GlassHeight,
+					_table.TableHeight,
+					_table.GlassHeight,
 					ItemType.Table
 				),
 				new LineSeg(
 					new Vertex2D(_data.Left, _data.Top),
 					new Vertex2D(_data.Right, _data.Top),
-					_data.TableHeight,
-					_data.GlassHeight,
+					_table.TableHeight,
+					_table.GlassHeight,
 					ItemType.Table
 				)
 			};
 
 			// glass
 			var rgv3D = new[] {
-				new Vertex3D(_data.Left, _data.Top, _data.GlassHeight),
-				new Vertex3D(_data.Right, _data.Top, _data.GlassHeight),
-				new Vertex3D(_data.Right, _data.Bottom, _data.GlassHeight),
-				new Vertex3D(_data.Left, _data.Bottom, _data.GlassHeight)
+				new Vertex3D(_data.Left, _data.Top, _table.GlassHeight),
+				new Vertex3D(_data.Right, _data.Top, _table.GlassHeight),
+				new Vertex3D(_data.Right, _data.Bottom, _table.GlassHeight),
+				new Vertex3D(_data.Left, _data.Bottom, _table.GlassHeight)
 			};
 			var hit3DPoly = new Hit3DPoly(rgv3D, ItemType.Table);
 			hit3DPoly.CalcHitBBox();
@@ -63,18 +65,22 @@ namespace VisualPinball.Engine.VPT.Table
 		}
 
 		public HitPlane GeneratePlayfieldHit() {
-			var playfieldHit = new HitPlane(new Vertex3D(0, 0, 1), _data.TableHeight);
+			var playfieldHit = new HitPlane(new Vertex3D(0, 0, 1), _table.TableHeight);
 			playfieldHit
 				.SetFriction(_data.GetFriction())
 				.SetElasticity(_data.GetElasticity(), _data.GetElasticityFalloff())
 				.SetScatter(MathF.DegToRad(_data.GetScatter()));
+			playfieldHit.ItemIndex = _table.Index;
+			playfieldHit.ItemVersion = _table.Version;
 			return playfieldHit;
 		}
 
 		public HitPlane GenerateGlassHit()
 		{
-			var glassHit = new HitPlane(new Vertex3D(0, 0, -1), _data.GlassHeight);
+			var glassHit = new HitPlane(new Vertex3D(0, 0, -1), _table.GlassHeight);
 			glassHit.SetElasticity(0.2f);
+			glassHit.ItemIndex = _table.Index;
+			glassHit.ItemVersion = _table.Version;
 			return glassHit;
 		}
 	}

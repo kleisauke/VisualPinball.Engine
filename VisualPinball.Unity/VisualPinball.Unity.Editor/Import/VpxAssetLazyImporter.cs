@@ -1,11 +1,8 @@
 using System.IO;
 using UnityEditor;
 using UnityEngine;
-using VisualPinball.Unity.Editor.Utils;
-using VisualPinball.Unity.Import;
-using VisualPinball.Unity.Import.Job;
 
-namespace VisualPinball.Unity.Editor.Import
+namespace VisualPinball.Unity.Editor
 {
 	/// <summary>
 	/// This component is attached to a game object when using the scripted importer for vpx files
@@ -28,9 +25,9 @@ namespace VisualPinball.Unity.Editor.Import
 			var path = AssetDatabase.GetAssetPath(obj);
 
 			GameObject tableRoot = new GameObject(obj.name);
-			var importer = tableRoot.AddComponent<VpxImporter>();
+			var converter = tableRoot.AddComponent<VpxConverter>();
 			var table = TableLoader.LoadTable(path);
-			importer.Import(Path.GetFileName(path), table);
+			converter.Convert(Path.GetFileName(path), table);
 
 			_importComplete = true;
 		}

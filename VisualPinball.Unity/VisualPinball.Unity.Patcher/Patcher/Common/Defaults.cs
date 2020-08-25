@@ -1,8 +1,8 @@
 using UnityEngine;
-using VisualPinball.Unity.Patcher.Matcher.Item;
-using VisualPinball.Unity.Patcher.Matcher.Table;
+using VisualPinball.Engine.Game;
+using VisualPinball.Engine.VPT.Table;
 
-namespace VisualPinball.Unity.Patcher.Patcher.Common
+namespace VisualPinball.Unity.Patcher
 {
 	[AnyMatch]
 	public class Defaults

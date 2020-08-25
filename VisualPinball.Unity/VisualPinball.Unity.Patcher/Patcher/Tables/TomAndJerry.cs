@@ -1,14 +1,13 @@
 ﻿// ReSharper disable StringLiteralTypo
 
 using UnityEngine;
-using VisualPinball.Unity.Patcher.Matcher.Item;
+using VisualPinball.Engine.VPT.Primitive;
 using VisualPinball.Unity.Patcher.Matcher.Table;
 
-namespace VisualPinball.Unity.Patcher.Patcher.Tables
+namespace VisualPinball.Unity.Patcher
 {
-	// TODO Problem: the table has wrong meta info, we should adapt the metamatch
-	[MetaMatch(TableName = "Beach Bums (HH Mod - Gottlieb 1986)", AuthorName = "Retro Bash")]
-	public class TomAndJerry : Common.Defaults
+	[TableNameMatch("TomandJerry")]
+	public class TomAndJerry
 	{
 		[NameMatch("ShadowsRamp")]
 		[NameMatch("JerryHAMMERshadow")]

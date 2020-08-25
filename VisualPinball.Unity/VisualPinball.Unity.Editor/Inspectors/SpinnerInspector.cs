@@ -1,12 +1,11 @@
 ﻿using UnityEditor;
-using VisualPinball.Unity.VPT.Spinner;
 
-namespace VisualPinball.Unity.Editor.Inspectors
+namespace VisualPinball.Unity.Editor
 {
-	[CustomEditor(typeof(SpinnerBehavior))]
+	[CustomEditor(typeof(SpinnerAuthoring))]
 	public class SpinnerInspector : ItemInspector
 	{
-		private SpinnerBehavior _spinner;
+		private SpinnerAuthoring _spinner;
 		private bool _foldoutColorsAndFormatting = true;
 		private bool _foldoutPosition = true;
 		private bool _foldoutPhysics = true;
@@ -15,12 +14,12 @@ namespace VisualPinball.Unity.Editor.Inspectors
 		protected override void OnEnable()
 		{
 			base.OnEnable();
-			_spinner = target as SpinnerBehavior;
+			_spinner = target as SpinnerAuthoring;
 		}
 
 		public override void OnInspectorGUI()
 		{
-			base.OnPreInspectorGUI();
+			OnPreInspectorGUI();
 
 			if (_foldoutColorsAndFormatting = EditorGUILayout.BeginFoldoutHeaderGroup(_foldoutColorsAndFormatting, "Colors & Formatting")) {
 				ItemDataField("Visible", ref _spinner.data.IsVisible);

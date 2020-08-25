@@ -71,14 +71,17 @@ namespace VisualPinball.Engine.VPT.HitTarget
 		[BiffFloat("RSCT", Pos = 15)]
 		public float Scatter;
 
+		[TextureReference]
 		[BiffString("IMAG", Pos = 4)]
-		public string Image;
+		public string Image = string.Empty;
 
+		[MaterialReference]
 		[BiffString("MATR", Pos = 7)]
-		public string Material;
+		public string Material = string.Empty;
 
+		[MaterialReference]
 		[BiffString("MAPH", Pos = 26)]
-		public string PhysicsMaterial;
+		public string PhysicsMaterial = string.Empty;
 
 		[BiffInt("TRTY", Pos = 5)]
 		public int TargetType = VisualPinball.Engine.VPT.TargetType.DropTargetSimple;
@@ -105,6 +108,12 @@ namespace VisualPinball.Engine.VPT.HitTarget
 			   TargetType == VisualPinball.Engine.VPT.TargetType.DropTargetBeveled
 			|| TargetType == VisualPinball.Engine.VPT.TargetType.DropTargetFlatSimple
 			|| TargetType == VisualPinball.Engine.VPT.TargetType.DropTargetSimple;
+
+		public HitTargetData(string name, float x, float y) : base(StoragePrefix.GameItem)
+		{
+			Name = name;
+			Position = new Vertex3D(x, y, 0f);
+		}
 
 		#region BIFF
 

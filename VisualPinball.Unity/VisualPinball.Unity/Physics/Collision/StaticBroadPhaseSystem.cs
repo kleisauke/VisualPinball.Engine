@@ -1,8 +1,7 @@
 ﻿using Unity.Entities;
 using Unity.Profiling;
-using VisualPinball.Unity.VPT.Ball;
 
-namespace VisualPinball.Unity.Physics.Collision
+namespace VisualPinball.Unity
 {
 	[DisableAutoCreation]
 	public class StaticBroadPhaseSystem : SystemBase
@@ -25,6 +24,11 @@ namespace VisualPinball.Unity.Physics.Collision
 			Entities
 				.WithName("StaticBroadPhaseJob")
 				.ForEach((ref DynamicBuffer<OverlappingStaticColliderBufferElement> colliderIds, in BallData ballData) => {
+
+				// don't play with frozen balls
+				if (ballData.IsFrozen) {
+					return;
+				}
 
 				marker.Begin();
 

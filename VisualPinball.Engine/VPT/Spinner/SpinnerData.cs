@@ -29,8 +29,9 @@ namespace VisualPinball.Engine.VPT.Spinner
 		[BiffFloat("ROTA", Pos = 2)]
 		public float Rotation = 0f;
 
+		[MaterialReference]
 		[BiffString("MATR", Pos = 13)]
-		public string Material;
+		public string Material = string.Empty;
 
 		[BiffBool("SSUP", Pos = 12)]
 		public bool ShowBracket = true;
@@ -42,7 +43,7 @@ namespace VisualPinball.Engine.VPT.Spinner
 		public float Length = 80f;
 
 		[BiffFloat("AFRC", Pos = 7)]
-		public float Damping;
+		public float Damping = 0.9879f;
 
 		[BiffFloat("SMAX", Pos = 8)]
 		public float AngleMax = 0f;
@@ -51,22 +52,29 @@ namespace VisualPinball.Engine.VPT.Spinner
 		public float AngleMin = 0f;
 
 		[BiffFloat("SELA", Pos = 10)]
-		public float Elasticity;
+		public float Elasticity = 0.3f;
 
 		[BiffBool("SVIS", Pos = 11)]
 		public bool IsVisible = true;
 
+		[TextureReference]
 		[BiffString("IMGF", Pos = 14)]
-		public string Image;
+		public string Image = string.Empty;
 
 		[BiffString("SURF", Pos = 15)]
-		public string Surface;
+		public string Surface = string.Empty;
 
 		[BiffBool("TMON", Pos = 3)]
 		public bool IsTimerEnabled;
 
 		[BiffInt("TMIN", Pos = 4)]
 		public int TimerInterval;
+
+		public SpinnerData(string name, float x, float y) : base(StoragePrefix.GameItem)
+		{
+			Name = name;
+			Center = new Vertex2D(x, y);
+		}
 
 		#region BIFF
 

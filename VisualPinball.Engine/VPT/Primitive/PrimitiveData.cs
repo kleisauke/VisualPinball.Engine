@@ -58,50 +58,53 @@ namespace VisualPinball.Engine.VPT.Primitive
 		[BiffFloat("RTV8", Index = 8, Pos = 11)]
 		public float[] RotAndTra = new float[9];
 
+		[TextureReference]
 		[BiffString("IMAG", Pos = 12)]
-		public string Image;
+		public string Image = string.Empty;
 
+		[TextureReference]
 		[BiffString("NRMA", Pos = 13)]
-		public string NormalMap;
+		public string NormalMap = string.Empty;
 
 		[BiffInt("SIDS", Pos = 14)]
-		public int Sides;
+		public int Sides = 4;
 
+		[MaterialReference]
 		[BiffString("MATR", Pos = 16)]
-		public string Material;
+		public string Material = string.Empty;
 
 		[BiffColor("SCOL", Pos = 17)]
 		public Color SideColor = new Color(0x0, ColorFormat.Bgr);
 
 		[BiffBool("TVIS", Pos = 18)]
-		public bool IsVisible;
+		public bool IsVisible = true;
 
 		[BiffBool("REEN", Pos = 34)]
-		public bool IsReflectionEnabled;
+		public bool IsReflectionEnabled = true;
 
 		[BiffBool("DTXI", Pos = 19)]
 		public bool DrawTexturesInside;
 
 		[BiffBool("HTEV", Pos = 20)]
-		public bool HitEvent;
+		public bool HitEvent = true;
 
 		[BiffFloat("THRS", Pos = 21)]
-		public float Threshold;
+		public float Threshold = 2f;
 
 		[BiffFloat("ELAS", Pos = 22)]
-		public float Elasticity;
+		public float Elasticity = 0.3f;
 
 		[BiffFloat("ELFO", Pos = 23)]
-		public float ElasticityFalloff;
+		public float ElasticityFalloff = 0.5f;
 
 		[BiffFloat("RFCT", Pos = 24)]
-		public float Friction;
+		public float Friction = 0.3f;
 
 		[BiffFloat("RSCT", Pos = 25)]
 		public float Scatter;
 
 		[BiffFloat("EFUI", Pos = 26)]
-		public float EdgeFactorUi;
+		public float EdgeFactorUi = 0.25f;
 
 		[BiffFloat("CORF", Pos = 27)]
 		public float CollisionReductionFactor = 0;
@@ -112,14 +115,15 @@ namespace VisualPinball.Engine.VPT.Primitive
 		[BiffBool("ISTO", Pos = 29)]
 		public bool IsToy;
 
+		[MaterialReference]
 		[BiffString("MAPH", Pos = 36)]
-		public string PhysicsMaterial;
+		public string PhysicsMaterial = string.Empty;
 
 		[BiffBool("OVPH", Pos = 37)]
-		public bool OverwritePhysics;
+		public bool OverwritePhysics = true;
 
 		[BiffBool("STRE", Pos = 31)]
-		public bool StaticRendering;
+		public bool StaticRendering = true;
 
 		[BiffFloat("DILI", QuantizedUnsignedBits = 8, Pos = 32)]
 		public float DisableLightingTop; // m_d.m_fDisableLightingTop = (tmp == 1) ? 1.f : dequantizeUnsigned<8>(tmp); // backwards compatible hacky loading!
@@ -140,7 +144,7 @@ namespace VisualPinball.Engine.VPT.Primitive
 		public bool ObjectSpaceNormalMap;
 
 		[BiffString("M3DN", Pos = 39)]
-		public string MeshFileName;
+		public string MeshFileName = string.Empty;
 
 		[BiffFloat("PIDB", Pos = 46)]
 		public float DepthBias = 0;
@@ -170,6 +174,12 @@ namespace VisualPinball.Engine.VPT.Primitive
 		{
 			Load(this, reader, Attributes);
 			Mesh.Name = Name;
+		}
+
+		public PrimitiveData(string name, float x, float y) : base(StoragePrefix.GameItem)
+		{
+			Name = name;
+			Position = new Vertex3D(x, y, 0f);
 		}
 
 		public override void Write(BinaryWriter writer, HashWriter hashWriter)

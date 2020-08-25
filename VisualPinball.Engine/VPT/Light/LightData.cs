@@ -43,13 +43,13 @@ namespace VisualPinball.Engine.VPT.Light
 		public Color Color2 = new Color(0xffffff, ColorFormat.Argb);
 
 		[BiffString("IMG1", Pos = 10)]
-		public string OffImage;
+		public string OffImage = string.Empty;
 
 		[BiffBool("SHAP", SkipWrite = true)]
 		public bool IsRoundLight = false;
 
 		[BiffString("BPAT", Pos = 9)]
-		public string BlinkPattern = "0";
+		public string BlinkPattern = "10";
 
 		[BiffInt("BINT", Pos = 11)]
 		public int BlinkInterval = 125;
@@ -58,10 +58,10 @@ namespace VisualPinball.Engine.VPT.Light
 		public float Intensity = 1f;
 
 		[BiffFloat("TRMS", Pos = 13)]
-		public float TransmissionScale = 0f;
+		public float TransmissionScale = 0.5f;
 
 		[BiffString("SURF", Pos = 14)]
-		public string Surface;
+		public string Surface = string.Empty;
 
 		[BiffBool("BGLS", Pos = 16)]
 		public bool IsBackglass = false;
@@ -85,7 +85,7 @@ namespace VisualPinball.Engine.VPT.Light
 		public bool ShowBulbMesh = false;
 
 		[BiffBool("STBM", Pos = 22)]
-		public bool HasStaticBulbMesh = false;
+		public bool HasStaticBulbMesh = true;
 
 		[BiffBool("SHRB", Pos = 23)]
 		public bool ShowReflectionOnBall = true;
@@ -118,6 +118,12 @@ namespace VisualPinball.Engine.VPT.Light
 		public LightData(BinaryReader reader, string storageName) : base(storageName)
 		{
 			Load(this, reader, Attributes);
+		}
+
+		public LightData(string name, float x, float y) : base(StoragePrefix.GameItem)
+		{
+			Name = name;
+			Center = new Vertex2D(x, y);
 		}
 
 		public override void Write(BinaryWriter writer, HashWriter hashWriter)

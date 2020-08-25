@@ -12,7 +12,7 @@ namespace VisualPinball.Engine.Test.VPT.Flasher
 		public void ShouldReadFlasherData()
 		{
 			var table = Engine.VPT.Table.Table.Load(VpxPath.Flasher);
-			ValidateFlasher(table.Flashers["Data"].Data);
+			ValidateFlasher(table.Flasher("Data").Data);
 		}
 
 		[Test]
@@ -22,7 +22,7 @@ namespace VisualPinball.Engine.Test.VPT.Flasher
 			var table = Engine.VPT.Table.Table.Load(VpxPath.Flasher);
 			table.Save(tmpFileName);
 			var writtenTable = Engine.VPT.Table.Table.Load(tmpFileName);
-			ValidateFlasher(writtenTable.Flashers["Data"].Data);
+			ValidateFlasher(writtenTable.Flasher("Data").Data);
 		}
 
 		private static void ValidateFlasher(FlasherData data)
@@ -37,9 +37,9 @@ namespace VisualPinball.Engine.Test.VPT.Flasher
 			data.DepthBias.Should().Be(0.282f);
 			data.DisplayTexture.Should().Be(false);
 			data.DragPoints.Length.Should().Be(4);
-			data.DragPoints[0].Vertex.X.Should().Be(333f);
-			data.DragPoints[0].Vertex.Y.Should().Be(735f);
-			data.DragPoints[0].Vertex.Z.Should().Be(0f);
+			data.DragPoints[0].Center.X.Should().Be(333f);
+			data.DragPoints[0].Center.Y.Should().Be(735f);
+			data.DragPoints[0].Center.Z.Should().Be(0f);
 			data.Filter.Should().Be(Filters.Filter_Overlay);
 			data.FilterAmount.Should().Be(100);
 			data.Height.Should().Be(50.22f);
