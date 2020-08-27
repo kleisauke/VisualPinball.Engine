@@ -9,7 +9,7 @@ jobs:
       - name: Build
         run: dotnet build -c Release -r win-x64
       - name: Build Contents
-        run: ls -lart VisualPinball.Engine.Test/.bin/Release/net472
+        run: ls -lart VisualPinball.Engine.Test/.bin/Release/netstandard2.0
         shell: bash
       - name: Test
         run: dotnet test -r win-x64
@@ -21,11 +21,9 @@ jobs:
       - uses: actions/checkout@v2
       - uses: nuget/setup-nuget@v1
       - name: Build
-        run: |
-           nuget restore
-           dotnet build -c Release -r win-x86
+        run: dotnet build -c Release -r win-x86
       - name: Build Contents
-        run: ls -lart VisualPinball.Engine.Test/.bin/Release/net472
+        run: ls -lart VisualPinball.Engine.Test/.bin/Release/netstandard2.0
         shell: bash
       - name: Test
         run: dotnet test -r win-x86
@@ -39,7 +37,7 @@ jobs:
       - name: Build
         run: dotnet build -c Release -r osx-x64
       - name: Build Contents
-        run: ls -lart VisualPinball.Engine.Test/.bin/Release/net472
+        run: ls -lart VisualPinball.Engine.Test/.bin/Release/netstandard2.0
       - name: Test
         run: dotnet test -r osx-x64
 
@@ -51,6 +49,6 @@ jobs:
       - name: Build
         run: dotnet build -c Release -r linux-x64
       - name: Build Contents
-        run: ls -lart VisualPinball.Engine.Test/.bin/Release/net472
+        run: ls -lart VisualPinball.Engine.Test/.bin/Release/netstandard2.0
       - name: Test
         run: dotnet test -r linux-x64
