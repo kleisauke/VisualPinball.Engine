@@ -43,7 +43,7 @@ jobs:
       - name: Build
         run: |
            nuget restore
-           dotnet build -c Release
+           dotnet build -c Release -r osx-x64
       - name: Build Contents
         run: ls -lart VisualPinball.Engine.Test/.bin/Release/net472
       - name: Test
@@ -60,7 +60,7 @@ jobs:
       - name: Build
         run: |
            nuget restore
-           dotnet build -c Release
+           dotnet build -c Release -r linux-x64
       - name: Build Contents
         run: ls -lart VisualPinball.Engine.Test/.bin/Release/net472
       - name: Test
