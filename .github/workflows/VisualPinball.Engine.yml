@@ -9,7 +9,7 @@ jobs:
       - name: Build
         run: dotnet build -c Release -r win-x64
       - name: Build Contents
-        run: ls -lart VisualPinball.Engine.Test/.bin/Release/netstandard2.0
+        run: ls -lart VisualPinball.Engine.Test/.bin/Release/netcoreapp3.1
         shell: bash
       - name: Test
         run: dotnet test -r win-x64
@@ -23,7 +23,7 @@ jobs:
       - name: Build
         run: dotnet build -c Release -r win-x86
       - name: Build Contents
-        run: ls -lart VisualPinball.Engine.Test/.bin/Release/netstandard2.0
+        run: ls -lart VisualPinball.Engine.Test/.bin/Release/netcoreapp3.1
         shell: bash
       - name: Test
         run: dotnet test -r win-x86
@@ -37,7 +37,7 @@ jobs:
       - name: Build
         run: dotnet build -c Release -r osx-x64
       - name: Build Contents
-        run: ls -lart VisualPinball.Engine.Test/.bin/Release/netstandard2.0
+        run: ls -lart VisualPinball.Engine.Test/.bin/Release/netcoreapp3.1
       - name: Test
         run: dotnet test -r osx-x64
 
@@ -49,6 +49,6 @@ jobs:
       - name: Build
         run: dotnet build -c Release -r linux-x64
       - name: Build Contents
-        run: ls -lart VisualPinball.Engine.Test/.bin/Release/netstandard2.0
+        run: ls -lart VisualPinball.Engine.Test/.bin/Release/netcoreapp3.1
       - name: Test
         run: dotnet test -r linux-x64
