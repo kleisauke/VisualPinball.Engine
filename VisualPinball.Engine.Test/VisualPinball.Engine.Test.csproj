@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework Condition="'$(MSBuildRuntimeType)' == 'Mono'">net472</TargetFramework>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <Title>VisualPinball.Engine.Test</Title>
     <Description>A .NET port of Visual Pinball in C#</Description>
@@ -18,9 +19,6 @@
     <RuntimeIdentifier Condition="$([MSBuild]::IsOSPlatform('OSX'))">osx-x64</RuntimeIdentifier>
     <RuntimeIdentifier Condition="$([MSBuild]::IsOSPlatform('Linux'))">linux-x64</RuntimeIdentifier>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.0" PrivateAssets="All" />
-  </ItemGroup>
   <ItemGroup>
     <None Remove="**/*.meta" Visible="false" />
     <None Remove="Fixtures*/*" Visible="false" />
