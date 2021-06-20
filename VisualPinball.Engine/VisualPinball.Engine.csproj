@@ -33,7 +33,7 @@
     <PackageReference Include="OpenMcdf" Version="2.2.1.9" />
     <PackageReference Include="NetMiniZ" Version="1.2.2" />
     <PackageReference Include="NetMiniZ.Native" Version="1.2.2" />
-    <PackageReference Include="NetVips" Version="2.0.0.276-develop" />
+    <PackageReference Include="NetVips" Version="2.0.0.277-develop" />
     <PackageReference Include="NetVips.Native" Version="8.10.6" />
   </ItemGroup>
   <ImportGroup Condition="'$(RuntimeIdentifier)' == 'win-x86' Or '$(RuntimeIdentifier)' == 'win-x64'">
