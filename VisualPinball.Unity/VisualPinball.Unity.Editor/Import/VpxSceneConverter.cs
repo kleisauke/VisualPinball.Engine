@@ -18,7 +18,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using NetVips;
 using NLog;
 using UnityEditor;
 using UnityEngine;
