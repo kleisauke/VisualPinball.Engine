@@ -28,10 +28,8 @@ namespace VisualPinball.Unity.Editor
 			if (texture.ConvertToPng) {
 				var path = texture.GetUnityFilename(folder);
 				Debug.Log($"Writing to {path}");
-				var im = texture.GetImage();
-				// im.WriteToFile() doesn't work - only seems to take in file names, not paths.
-				File.WriteAllBytes(path, im.WriteToBuffer(".png"));
-
+				using (var im = texture.GetImage())
+					im.Pngsave(path);
 			} else { // might need to convert other formats like webp
 				var path = texture.GetUnityFilename(folder);
 				File.WriteAllBytes(path, texture.Content);
